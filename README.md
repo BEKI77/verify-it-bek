@@ -2,8 +2,7 @@
 
 ## Contributors
 
-- [Your Full Name]
-- [Other Team Members]
+- Bereket Tadiwos
 
 ## Problem Statement
 
@@ -34,7 +33,7 @@ Fayda ID is used for:
 ## Tech Stack
 
 - Frontend: React.js + Tailwind
-- Backend: Node.js + Express
+- Backend: Nest.js
 - Database: PostgreSQL
 - Auth: VeriFayda OIDC (OpenID Connect)
 - File Storage: Firebase / AWS S3
