@@ -1,18 +1,67 @@
-import React, { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Shield, User, Building, Search } from 'lucide-react';
 import Alert from '../components/UI/Alert';
 
 const LoginPage: React.FC = () => {
   const [selectedRole, setSelectedRole] = useState<'student' | 'institution' | 'verifier'>('student');
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [showError, setShowError] = useState(false);
   const { login } = useAuth();
-  const navigate = useNavigate();
-  const location = useLocation();
 
-  const from = location.state?.from?.pathname || '/';
+  const [faydaUrl, setFaydaUrl] = useState<string>('');
+  useEffect(() => {
+    async function prepareUrl() {
+      const codeVerifier = generateCodeVerifier();
+      sessionStorage.setItem('pkce_code_verifier', codeVerifier);
+      const codeChallenge = await pkceChallengeFromVerifier(codeVerifier);
+
+      const params = new URLSearchParams({
+        client_id: import.meta.env.VITE_CLIENT_ID,
+        redirect_uri: import.meta.env.VITE_REDIRECT_URL,
+        response_type: "code",
+        scope: "openid profile email",
+        acr_values: "mosip:idp:acr:generated-code mosip:idp:acr:linked-wallet mosip:idp:acr:biometrics",
+        claims: '{"userinfo":{"name":{"essential":true},"phone":{"essential":true},"email":{"essential":true},"picture":{"essential":true},"gender":{"essential":true},"birthdate":{"essential":true},"address":{"essential":true}},"id_token":{}}',
+        code_challenge: codeChallenge,
+        code_challenge_method: "S256",
+        display: "page",
+        nonce: "g4DEuje5Fx57Vb64dO4oqLHXGT8L8G7g",
+        state: "ptOO76SD",
+        ui_locales: "en",
+      });
+      
+      setFaydaUrl(`${import.meta.env.VITE_AUTHORIZATION_ENDPOINT}?${params.toString()}`);
+    }
+    prepareUrl();
+  }, []);
+
+ 
+  async function pkceChallengeFromVerifier(verifier: string) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(verifier);
+    const hashBuffer = await window.crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const base64 = btoa(String.fromCharCode(...hashArray));
+    return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  }
+ 
+
+  function generateCodeVerifier(length = 64) {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~';
+    let result = '';
+    const array = new Uint8Array(length);
+    crypto.getRandomValues(array);
+    array.forEach(byte => result += chars[byte % chars.length]);
+    return result;
+  }
+
+  const codeVerifier = generateCodeVerifier();
+  console.log("Code Verifier:", codeVerifier);
+
+
 
   const roleOptions = [
     {
@@ -158,15 +207,27 @@ const LoginPage: React.FC = () => {
                 placeholder="Enter your email"
               />
             </div>
-
-            {/* Mock Fayda Login Button */}
             <button
               type="submit"
               className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
             >
-              Login with Fayda ID (Mock)
+              Login
             </button>
           </form>
+
+          <p className="my-6 text-center text-gray-500 dark:text-gray-400 font-medium">or</p>
+          <a
+            href={faydaUrl}
+            className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-md bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold shadow hover:from-blue-700 hover:to-indigo-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          >
+            <img
+              src="https://fayda.id/assets/fayda-logo.svg"
+              alt="Fayda E-Signet"
+              className="h-5 w-5 mr-2"
+              style={{ background: 'white', borderRadius: '50%' }}
+            />
+            Login with Fayda E-Signet
+          </a>
 
           {/* Demo Accounts */}
           <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">

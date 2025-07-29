@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { Download, Share2, QrCode, FileText, Award, Calendar } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
-import Sidebar from '../components/Layout/Sidebar';
-import CertificateCard from '../components/UI/CertificateCard';
-import QRCodeViewer from '../components/UI/QRCodeViewer';
-import Modal from '../components/UI/Modal';
-import Alert from '../components/UI/Alert';
-import { Certificate } from '../types';
+import { useAuth } from '../../context/AuthContext';
+import Sidebar from '../Layout/Sidebar';
+import CertificateCard from '../UI/CertificateCard';
+import QRCodeViewer from '../UI/QRCodeViewer';
+import Modal from '..//UI/Modal';
+import Alert from '../UI/Alert';
+import { Certificate } from '../../types';
 
 const StudentDashboard: React.FC = () => {
   const { user } = useAuth();

@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Search, FileText, Download, CheckCircle, XCircle, AlertCircle, Calendar } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
-import Sidebar from '../components/Layout/Sidebar';
-import Alert from '../components/UI/Alert';
-import { Certificate } from '../types';
+import { useAuth } from '../../context/AuthContext';
+import Sidebar from '../Layout/Sidebar';
+import Alert from '../UI/Alert';
+import { Certificate } from '../../types';
 
 const VerifierDashboard: React.FC = () => {
   const { user } = useAuth();

@@ -5,9 +5,10 @@ import { ThemeProvider } from './context/ThemeContext';
 import Navbar from './components/Layout/Navbar';
 import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
-import StudentDashboard from './pages/StudentDashboard';
-import InstitutionDashboard from './pages/InstitutionDashboard';
-import VerifierDashboard from './pages/VerifierDashboard';
+import AuthCallbackPage from './auth/AuthCallbackPage';
+import StudentDashboard from './components/student/StudentDashboard';
+import InstitutionDashboard from './components/institution/InstitutionDashboard';
+import VerifierDashboard from './components/verifier/VerifierDashboard';
 import NotFoundPage from './pages/NotFoundPage';
 
 const ProtectedRoute: React.FC<{ 
@@ -49,7 +50,7 @@ const AppRoutes: React.FC = () => {
                   <LoginPage />
               } 
             />
-            
+            <Route path="/callback" element={<AuthCallbackPage />} />
             {/* Protected Routes */}
             <Route 
               path="/student-dashboard" 

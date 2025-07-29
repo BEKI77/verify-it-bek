@@ -49,6 +49,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, []);
 
+  
+
   const login = (email: string, role: User['role']) => {
     const userData = mockUsers[email];
     if (userData && userData.role === role) {
@@ -57,14 +59,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const handleAuthCallback = (code: string) => {
+    console.log(`CODE :  ${code}`);
+  };
+
   const logout = () => {
     setUser(null);
     localStorage.removeItem('eduverify_user');
   };
 
+  
+
   const value = {
     user,
     login,
+    handleAuthCallback,
     logout,
     isAuthenticated: !!user
   };

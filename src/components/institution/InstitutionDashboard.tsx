@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Upload, Users, FileText, Calendar, TrendingUp } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
-import Sidebar from '../components/Layout/Sidebar';
-import FileUpload from '../components/UI/FileUpload';
-import CertificateCard from '../components/UI/CertificateCard';
-import Alert from '../components/UI/Alert';
-import { Certificate } from '../types';
+import { useAuth } from '../../context/AuthContext';
+import Sidebar from '../Layout/Sidebar';
+import FileUpload from '../UI/FileUpload';
+import CertificateCard from '../UI/CertificateCard';
+import Alert from '../UI/Alert';
+import { Certificate } from '../../types';
 
 const InstitutionDashboard: React.FC = () => {
   const { user } = useAuth();
