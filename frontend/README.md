@@ -50,7 +50,7 @@ This is the frontend for **EduVerify – School Certificate Verification Portal*
    ```
    - The app will be available at http://localhost:3000
 
-### Project Structure
+## Project Structure
 
     ```sh
     frontend/
@@ -70,9 +70,10 @@ This is the frontend for **EduVerify – School Certificate Verification Portal*
     └── README.md
     ```
 
-### Environment Variables
+## Environment Variables
 
     - Create a .env.local file in the frontend directory with the following variables:
+
 
     ```sh
     VITE_CLIENT_ID=your-fayda-client-id
@@ -83,6 +84,6 @@ This is the frontend for **EduVerify – School Certificate Verification Portal*
     VITE_PRIVATE_KEY=your-base64-encoded-private-key
     ```
 
-### Proxy Setup
+## Proxy Setup
 
     - API requests to /api are proxied to the Fayda Esignet OIDC server as configured in vite.config.ts.
