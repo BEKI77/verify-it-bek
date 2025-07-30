@@ -1,7 +1,6 @@
 import React from 'react';
 import { TrendingUp, Users, FileText, Calendar, Award, BarChart3, PieChart, Activity } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import Sidebar from '../../components/Layout/Sidebar';
 
 const InstitutionAnalytics: React.FC = () => {
   const { user } = useAuth();

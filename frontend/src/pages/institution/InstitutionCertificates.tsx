@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Search, Filter, Download, Eye, MoreHorizontal, Calendar, User, FileText } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import Sidebar from '../../components/Layout/Sidebar';
 import Alert from '../../components/UI/Alert';
 import { Certificate } from '../../types';
 

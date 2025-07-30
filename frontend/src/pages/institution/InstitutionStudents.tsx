@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Search, User, Mail, Phone, Calendar, FileText, Plus, MoreHorizontal } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import Sidebar from '../../components/Layout/Sidebar';
 import Modal from '../../components/UI/Modal';
 import Alert from '../../components/UI/Alert';
 
@@ -170,8 +169,7 @@ const InstitutionStudents: React.FC = () => {
   ];
 
   return (
-    <div className="flex  bg-gray-50 dark:bg-gray-900">
-      
+    <div className="flex bg-gray-50 dark:bg-gray-900">   
       <div className="flex-1 overflow-auto">
         <div className="p-8">
           {showAlert && (
