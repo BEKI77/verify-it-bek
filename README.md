@@ -46,6 +46,38 @@ Fayda ID is used for:
 3. Setup .env for Fayda OIDC and database
 4. Run `npm run dev`
 
+## Frontend `.env.local` Example
+
+The `.env.local` file for the frontend should look like this:
+
+```bash
+VITE_CLIENT_ID=your-client-id
+VITE_REDIRECT_URL=http://localhost:3000/callback
+VITE_AUTHORIZATION_ENDPOINT=https://your-auth-endpoint/authorize
+VITE_TOKEN_ENDPOINT=https://your-token-endpoint/token
+VITE_USERINFO_ENDPOINT=https://your-userinfo-endpoint/userinfo
+VITE_PRIVATE_KEY=your-private-key
+VITE_EXPIRATION_TIME=15
+VITE_ALGORITHM=RS256
+VITE_CLIENT_ASSERTION_TYPE=urn:ietf:params:oauth:client-assertion-type:jwt-bearer
+```
+
+Replace the placeholder values (your-client, your-auth-endpoint, etc.) with the actual values for your environment.
+
+## Running with Docker Compose
+
+To run the application using Docker Compose:
+
+1. Ensure Docker and Docker Compose are installed on your system.
+2. Create a docker-compose.yml file in the root directory of the project.
+3. Run the following command to start the services:
+
+```bash
+docker-compose up --build
+```
+
+4. Access the application at http://localhost:3000 for the frontend and the appropriate port for the backend
+
 ## License
 
-MIT
+The unlicensed
