@@ -16,5 +16,15 @@ export default defineConfig({
         rewrite: (path) => path.replace(/^\/api/, ''),
       }
     }
+  },
+  preview:{
+    port:3000,
+    proxy: {
+      '/api': {
+        target: 'https://esignet.ida.fayda.et',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ''),
+      }
+    }
   }
 });

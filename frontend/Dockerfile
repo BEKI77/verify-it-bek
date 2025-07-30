@@ -3,27 +3,24 @@ FROM node:22-alpine AS builder
 
 WORKDIR /app
 
-COPY package.json package-lock.json  ./
+COPY package.json package-lock.json ./
 
+# Use --frozen-lockfile for CI/CD environments
 RUN npm install --frozen-lockfile
 
 COPY . .
 
+# Build the React app
 RUN npm run build
 
 # Production stage
-FROM node:22-alpine AS runner
+FROM nginx:stable-alpine AS production
 
-WORKDIR /app
+# Copy the build output from the builder stage to the nginx html directory
+COPY --from=builder /app/dist /usr/share/nginx/html
+COPY .env.local  .env.local
+# Expose port 80 for nginx
+EXPOSE 80
 
-# Only copy production node_modules and build output
-COPY --from=builder /app/package.json .
-COPY --from=builder /app/package-lock.json .
-COPY --from=builder /app/next.config.ts  ./
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/.next/standalone ./
-COPY --from=builder /app/.next/static ./.next/static
-
-EXPOSE 3000
-
-CMD ["node", "server.js"]
+# The default nginx command will start the server
+CMD ["nginx", "-g", "daemon off;"]

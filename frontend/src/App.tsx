@@ -5,10 +5,18 @@ import { ThemeProvider } from './context/ThemeContext';
 import Navbar from './components/Layout/Navbar';
 import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
-import AuthCallbackPage from './auth/AuthCallbackPage';
 import StudentDashboard from './pages/student/StudentDashboard';
+import StudentCertificates from './pages/student/StudentCertificate';
+import StudentSettings from './pages/student/StudentSetting';
 import InstitutionDashboard from './pages/institution/InstitutionDashboard';
+import InstitutionUpload from './pages/institution/InstitutionUpload';
+import InstitutionCertificates from './pages/institution/InstitutionCertificates';
+import InstitutionStudents from './pages/institution/InstitutionStudents';
+import InstitutionAnalytics from './pages/institution/institutionAnalytics';
 import VerifierDashboard from './pages/verifier/VerifierDashboard';
+import VerifierVerify from './pages/verifier/VerifierVerify';
+import VerifierHistory from './pages/verifier/VerifierHistory';
+import VerifierReports from './pages/verifier/VerifierReports';
 import NotFoundPage from './pages/NotFoundPage';
 
 const ProtectedRoute: React.FC<{ 
@@ -50,13 +58,29 @@ const AppRoutes: React.FC = () => {
                   <LoginPage />
               } 
             />
-            <Route path="/callback" element={<AuthCallbackPage />} />
+            
             {/* Protected Routes */}
             <Route 
               path="/student-dashboard" 
               element={
                 <ProtectedRoute allowedRoles={['student']}>
                   <StudentDashboard />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/student-dashboard/certificates" 
+              element={
+                <ProtectedRoute allowedRoles={['student']}>
+                  <StudentCertificates />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/student-dashboard/settings" 
+              element={
+                <ProtectedRoute allowedRoles={['student']}>
+                  <StudentSettings />
                 </ProtectedRoute>
               } 
             />
@@ -69,10 +93,66 @@ const AppRoutes: React.FC = () => {
               } 
             />
             <Route 
+              path="/institution-dashboard/upload" 
+              element={
+                <ProtectedRoute allowedRoles={['institution']}>
+                  <InstitutionUpload />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/institution-dashboard/certificates" 
+              element={
+                <ProtectedRoute allowedRoles={['institution']}>
+                  <InstitutionCertificates />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/institution-dashboard/students" 
+              element={
+                <ProtectedRoute allowedRoles={['institution']}>
+                  <InstitutionStudents />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/institution-dashboard/analytics" 
+              element={
+                <ProtectedRoute allowedRoles={['institution']}>
+                  <InstitutionAnalytics />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
               path="/verifier-dashboard" 
               element={
                 <ProtectedRoute allowedRoles={['verifier']}>
                   <VerifierDashboard />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/verifier-dashboard/verify" 
+              element={
+                <ProtectedRoute allowedRoles={['verifier']}>
+                  <VerifierVerify />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/verifier-dashboard/history" 
+              element={
+                <ProtectedRoute allowedRoles={['verifier']}>
+                  <VerifierHistory />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/verifier-dashboard/reports" 
+              element={
+                <ProtectedRoute allowedRoles={['verifier']}>
+                  <VerifierReports />
                 </ProtectedRoute>
               } 
             />
