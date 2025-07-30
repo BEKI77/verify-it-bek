@@ -47,7 +47,7 @@ This is the backend for the **Verify-It** application, built with the [Nest](htt
 3.  Set up environment variables. Create a `.env` file in the root of the `backend` directory by copying the example below.
     ```env
     # .env
-    PORT=3001
+    PORT=4000
     DATABASE_URL="postgresql://user:password@host:port/database_name"
     ```
 
@@ -72,7 +72,7 @@ This project uses `drizzle-kit` for database migrations.
     npm run db:studio
     ```
 
-## Running the Application
+### Running the Application
 
 ```bash
 # Development mode with watch
@@ -82,34 +82,29 @@ $ npm run start:dev
 $ npm run start:prod
 ```
 
-## Running Tests
-
-```bash
-# Unit tests
-$ npm run test
-
-# End-to-end tests
-$ npm run test:e2e
-
-# Test coverage
-$ npm run test:cov
-```
-
-## Docker
+### Docker
 
 You can also build and run the application using Docker.
 
-1.  Build the Docker image:
+1.  **Migrate the database schema before running Docker Compose**:
+
+    Before starting the application with Docker Compose, ensure the database schema is migrated. Run the following command:
 
     ```bash
-    docker build -t verify-it-backend .
+    npm run db:migrate
     ```
 
-2.  Run the container. Make sure you have a `.env` file created.
+2.  Build the Docker image:
+
     ```bash
-    # The Dockerfile exposes port 4000, but the app runs on the PORT from .env (default 3000).
+    docker build -t .
+    ```
+
+3.  Run the container. Make sure you have a `.env` file created.
+    ```bash
+    # The Dockerfile exposes port 4000,.
     # This command maps port 3000 on your host to port 3000 in the container.
-    docker run --env-file .env -p 3000:3000 verify-it-backend
+    docker run --env-file .env -p 4000:4000 verify-it-backend
     ```
 
 ## License
