@@ -32,6 +32,8 @@ Fayda ID is used for:
 
 ## Tech Stack
 
+For detailed documentation, visit [EduVerify Documentation](https://docs.google.com/document/d/1nCBWbSd1rzyfWI6GZUUVCii_pXZ4WfiFr70zxHnE00w/edit?usp=sharing).
+
 - Frontend: React.js + Tailwind
 - Backend: Nest.js
 - Database: PostgreSQL
