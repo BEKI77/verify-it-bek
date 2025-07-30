@@ -3,74 +3,94 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { SignJWT, importJWK, decodeJwt } from 'jose';
 import { Buffer } from 'buffer';
+import { useAuth } from '../context/AuthContext';
+import { User } from '../types';
+import { toast, ToastContainer } from 'react-toastify'; // Import toast
+import 'react-toastify/dist/ReactToastify.css';
 
 const AuthCallbackPage: React.FC = () => {
+  const {  handleAuthCallback }  = useAuth();
   const navigate = useNavigate();
   const [userInfo, setUserInfo] = useState<any>(null);
   
   const location = useLocation();
   useEffect(() => {
-    const fetchToken = async (code :string) => {
+    const fetchTokenAndUserInfo = async (code :string) => {
       try {
 
         const clientId = import.meta.env.VITE_CLIENT_ID ;
+        const tokenEndpoint = import.meta.env.VITE_TOKEN_ENDPOINT;
+        const redirectUri = import.meta.env.VITE_REDIRECT_URI;
+        const clientAssertionType = import.meta.env.VITE_CLIENT_ASSERTION_TYPE;
 
-        if(!clientId){
-            console.log("No client id")
-            return null;
+        if (!clientId || !tokenEndpoint || !redirectUri || !clientAssertionType) {
+          console.error("Missing required OIDC environment variables");
+          return;
         }
 
-        const signedJwt = await generateSignedJwt(clientId);
         const codeVerifier = sessionStorage.getItem('pkce_code_verifier');
-        console.log(`Code_verifier on the callback: ${codeVerifier}`);
 
-        if(!codeVerifier){
-          return null;
+        if (!codeVerifier) {
+          console.error("Missing PKCE code_verifier in sessionStorage");
+          return;
         }
+
+        const signedJwt = await generateSignedJwt(clientId, tokenEndpoint);
+
 
         const response = await axios.post(
           '/api/v1/esignet/oauth/v2/token',
           new URLSearchParams({
             grant_type: 'authorization_code',
             code: code,
-            redirect_uri: import.meta.env.VITE_REDIRECT_URL,
+            redirect_uri: redirectUri,
             client_id: clientId,
-            client_assertion_type: import.meta.env.VITE_CLIENT_ASSERTION_TYPE,
-            client_assertion: signedJwt,
+            client_assertion_type: clientAssertionType,
+            client_secret: signedJwt,
             code_verifier: codeVerifier
           }),
           { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
         );
 
         const { access_token } = response.data;
-        console.log("Access token:", access_token);
 
-        const userInfoResponse = await axios.get('/api/v1/esignet/oidc/userinfo', {
+        
+        const userInfoResponse = await axios.get(import.meta.env.VITE_USERINFO_ENDPOINT, {
           headers: {
-            Authorization: `Bearer ${access_token}`,
-          },
+            Authorization: `Bearer ${access_token}`
+          }
         });
 
-        console.log("User info response:", userInfoResponse.data);
-        const decodedUserInfo = await decodeUserInfoResponse(userInfoResponse.data);
-        console.log("Decoded user info:", decodedUserInfo);
+        const decoded = decodeJwt(userInfoResponse.data);
 
-        // Store the decoded user info in state
-        setUserInfo(decodedUserInfo);
-        if(decodedUserInfo){
-            navigate('/student-dashboard');
-        }
+        console.log("Decoded user info:", decoded);
 
-      } catch (error) {
-        console.error('Error fetching token or user info:', error);
+        setUserInfo(decoded);
+
+        // If the token end point have worked i would have call the backend to check if the user is already registered or a new comer
+        // then if is's a new  user populate the database with retrived information else fetch the stored user data from
+        // the  back end ---- to  be implemented
+
+        handleAuthCallback(decoded as any as User);
+
+        toast.info("Login succssful");
+        // Redirect or render dashboard
+        navigate('/student-dashboard');
+
+      } catch (error: any) {
+        console.error('OIDC flow failed:', error.response?.data || error.message);
+
+        toast.error('Login failed. Please try again.');
+
+        navigate('/login');
       }
     };
 
-    const query = new URLSearchParams(location.search);
-    const code = query.get('code');
+    const queryParams = new URLSearchParams(location.search);
+    const code = queryParams.get('code');
 
     if (code) {
-      fetchToken(code);
+      fetchTokenAndUserInfo(code);
     }
 
   }, [location.search]);
@@ -78,55 +98,32 @@ const AuthCallbackPage: React.FC = () => {
   return <div>Processing authentication...</div>;
 };
 
-const generateSignedJwt = async (clientId : string) => {
-  // const header = {
-  //   alg: 'RS256',
-  //   typ: 'JWT',
-  // };
-
+const generateSignedJwt = async (clientId: string, tokenEndpoint: string) => {
   const now = Math.floor(Date.now() / 1000);
-  const exp = now + 2 * 60 * 60; // 2 hours from now
+  const exp = now + 15 * 60; // match Python's 15 min expiration
 
-  // const payload = {
-  //   iss: clientId,
-  //   sub: clientId,
-  //   aud: import.meta.env.VITE_TOKEN_ENDPOINT,
-  //   iat: now,
-  //   exp: exp,
-  // };
+  const privateJwkStr = Buffer.from(import.meta.env.VITE_PRIVATE_KEY, 'base64').toString('utf-8');
+  const jwkJson = JSON.parse(privateJwkStr);
 
-  const decodeKey = Buffer.from(import.meta.env.VITE_PRIVATE_KEY, 'base64').toString('utf-8');
-  const jwk = JSON.parse(decodeKey);
-  const privateKey = await importJWK(jwk, 'RS256');
+  const privateKey = await importJWK(jwkJson, 'RS256');
 
-  // const privateKey = await jose.importJWK(jwkObject, import.meta.env.VITE_ALGORITHM);
-
-  // const jwt = await new jose.SignJWT(payload)
-  //   .setProtectedHeader(header)
-  //   .sign(privateKey);
+  console.log(privateKey);
 
   const jwt = await new SignJWT({
     iss: clientId,
     sub: clientId,
-    aud: import.meta.env.VITE_TOKEN_ENDPOINT,
+    aud: tokenEndpoint,
     iat: now,
     exp: exp
   })
-  .setProtectedHeader({ alg: 'RS256', kid: jwk.kid })
-  .sign(privateKey);
+    .setProtectedHeader({
+      alg: 'RS256',
+      typ: 'JWT',
+      ...(jwkJson.kid && { kid: jwkJson.kid })
+    })
+    .sign(privateKey);
 
-  console.log(jwt);
-  console.log(jwk);
   return jwt;
-};
-
-const decodeUserInfoResponse = async (userinfoJwtToken: string) => {
-  try {
-    return decodeJwt(userinfoJwtToken);
-  } catch (error) {
-    console.error('Error decoding JWT user info:', error);
-    return null;
-  }
 };
 
 export default AuthCallbackPage;

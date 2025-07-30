@@ -50,18 +50,30 @@ const LoginPage: React.FC = () => {
       console.log(`code_varifier:  ${code_Verifier}`);
       console.log(`code_challenge: ${code_challenge}`);
 
+      
+
       const params = new URLSearchParams({
         client_id: import.meta.env.VITE_CLIENT_ID,
-        redirect_uri: import.meta.env.VITE_REDIRECT_URL,
-        response_type: "code",
-        scope: "openid profile email",
-        claims: '{"userinfo":{"name":{"essential":true},"phone":{"essential":true},"email":{"essential":true},"picture":{"essential":true},"gender":{"essential":true},"birthdate":{"essential":true},"address":{"essential":true}},"id_token":{}}',
+        response_type: 'code',
+        redirect_uri: import.meta.env.VITE_REDIRECT_URI,
+        scope: 'openid profile email',
+        state: 'ptOO76SD',
         code_challenge: code_challenge,
-        code_challenge_method: "S256",
-        display: "page",
-        nonce: "g4DEuje5Fx57Vb64dO4oqLHXGT8L8G7g",
-        state: "ptOO76SD",
-        ui_locales: "en",
+        code_challenge_method: 'S256',
+        acr_values: 'mosip:idp:acr:generated-code',
+        claims_locales: 'en am',
+        claims: JSON.stringify({
+          userinfo: {
+            name: { essential: true },
+            phone: { essential: true },
+            email: { essential: true },
+            picture: { essential: true },
+            gender: { essential: true },
+            birthdate: { essential: true },
+            address: { essential: true }
+          },
+          id_token: {}
+        })
       });
       
       setFaydaUrl(`${import.meta.env.VITE_AUTHORIZATION_ENDPOINT}?${params.toString()}`);

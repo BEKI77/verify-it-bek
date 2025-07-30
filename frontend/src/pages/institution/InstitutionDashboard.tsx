@@ -93,8 +93,8 @@ const InstitutionDashboard: React.FC = () => {
   ];
 
   return (
-    <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
-      <Sidebar />
+    <div className="flex bg-gray-50 dark:bg-gray-900">
+
       
       <div className="flex-1 overflow-auto">
         <div className="p-8">

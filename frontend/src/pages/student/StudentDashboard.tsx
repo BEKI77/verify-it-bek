@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Download, Share2, QrCode, FileText, Award, Calendar } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import Sidebar from '../../components/Layout/Sidebar';
 import CertificateCard from '../../components/UI/CertificateCard';
 import QRCodeViewer from '../../components/UI/QRCodeViewer';
 import Modal from '../../components/UI/Modal';
@@ -91,9 +90,7 @@ const StudentDashboard: React.FC = () => {
   ];
 
   return (
-    <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
-      <Sidebar />
-      
+    <div className="flex bg-gray-50 dark:bg-gray-900">      
       <div className="flex-1 overflow-hidden">
         <div className="p-8">
           {showAlert && (

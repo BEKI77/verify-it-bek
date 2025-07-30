@@ -18,6 +18,8 @@ import VerifierVerify from './pages/verifier/VerifierVerify';
 import VerifierHistory from './pages/verifier/VerifierHistory';
 import VerifierReports from './pages/verifier/VerifierReports';
 import NotFoundPage from './pages/NotFoundPage';
+import AuthCallbackPage from './auth/AuthCallbackPage';
+import DashboardLayout from './layouts/DashboardLayout';
 
 const ProtectedRoute: React.FC<{ 
   children: React.ReactNode; 
@@ -42,126 +44,74 @@ const AppRoutes: React.FC = () => {
   return (
     <Router>
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-        <Navbar />
-        <div className="pt-16">
-          <Routes>
-            <Route path="/" element={<LandingPage />} />
-            <Route 
-              path="/login" 
-              element={
-                isAuthenticated ? 
-                  <Navigate to={
-                    user?.role === 'student' ? '/student-dashboard' :
-                    user?.role === 'institution' ? '/institution-dashboard' :
-                    user?.role === 'verifier' ? '/verifier-dashboard' : '/'
-                  } replace /> : 
-                  <LoginPage />
-              } 
-            />
-            
-            {/* Protected Routes */}
-            <Route 
-              path="/student-dashboard" 
-              element={
-                <ProtectedRoute allowedRoles={['student']}>
-                  <StudentDashboard />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/student-dashboard/certificates" 
-              element={
-                <ProtectedRoute allowedRoles={['student']}>
-                  <StudentCertificates />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/student-dashboard/settings" 
-              element={
-                <ProtectedRoute allowedRoles={['student']}>
-                  <StudentSettings />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/institution-dashboard" 
-              element={
-                <ProtectedRoute allowedRoles={['institution']}>
-                  <InstitutionDashboard />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/institution-dashboard/upload" 
-              element={
-                <ProtectedRoute allowedRoles={['institution']}>
-                  <InstitutionUpload />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/institution-dashboard/certificates" 
-              element={
-                <ProtectedRoute allowedRoles={['institution']}>
-                  <InstitutionCertificates />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/institution-dashboard/students" 
-              element={
-                <ProtectedRoute allowedRoles={['institution']}>
-                  <InstitutionStudents />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/institution-dashboard/analytics" 
-              element={
-                <ProtectedRoute allowedRoles={['institution']}>
-                  <InstitutionAnalytics />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/verifier-dashboard" 
-              element={
-                <ProtectedRoute allowedRoles={['verifier']}>
-                  <VerifierDashboard />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/verifier-dashboard/verify" 
-              element={
-                <ProtectedRoute allowedRoles={['verifier']}>
-                  <VerifierVerify />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/verifier-dashboard/history" 
-              element={
-                <ProtectedRoute allowedRoles={['verifier']}>
-                  <VerifierHistory />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/verifier-dashboard/reports" 
-              element={
-                <ProtectedRoute allowedRoles={['verifier']}>
-                  <VerifierReports />
-                </ProtectedRoute>
-              } 
-            />
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/" element={<LandingPage />} />
+          <Route 
+            path="/login" 
+            element={
+              isAuthenticated ? 
+                <Navigate to={
+                  user?.role === 'student' ? '/student-dashboard' :
+                  user?.role === 'institution' ? '/institution-dashboard' :
+                  user?.role === 'verifier' ? '/verifier-dashboard' : '/'
+                } replace /> : 
+                <LoginPage />
+            } 
+          />
+          <Route path="/callback" element={<AuthCallbackPage />} />
 
-            {/* Catch all route */}
-            <Route path="/404" element={<NotFoundPage />} />
-            <Route path="*" element={<NotFoundPage />} />
-          </Routes>
-        </div>
+          {/* Protected Routes with DashboardLayout */}
+          <Route 
+            path="/student-dashboard/*" 
+            element={
+              <ProtectedRoute allowedRoles={['student']}>
+                <DashboardLayout>
+                  <Routes>
+                    <Route path="" element={<StudentDashboard />} />
+                    <Route path="certificates" element={<StudentCertificates />} />
+                    <Route path="settings" element={<StudentSettings />} />
+                  </Routes>
+                </DashboardLayout>
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/institution-dashboard/*" 
+            element={
+              <ProtectedRoute allowedRoles={['institution']}>
+                <DashboardLayout>
+                  <Routes>
+                    <Route path="" element={<InstitutionDashboard />} />
+                    <Route path="upload" element={<InstitutionUpload />} />
+                    <Route path="certificates" element={<InstitutionCertificates />} />
+                    <Route path="students" element={<InstitutionStudents />} />
+                    <Route path="analytics" element={<InstitutionAnalytics />} />
+                  </Routes>
+                </DashboardLayout>
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/verifier-dashboard/*" 
+            element={
+              <ProtectedRoute allowedRoles={['verifier']}>
+                <DashboardLayout>
+                  <Routes>
+                    <Route path="" element={<VerifierDashboard />} />
+                    <Route path="verify" element={<VerifierVerify />} />
+                    <Route path="history" element={<VerifierHistory />} />
+                    <Route path="reports" element={<VerifierReports />} />
+                  </Routes>
+                </DashboardLayout>
+              </ProtectedRoute>
+            } 
+          />
+
+          {/* Catch all route */}
+          <Route path="/404" element={<NotFoundPage />} />
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
       </div>
     </Router>
   );

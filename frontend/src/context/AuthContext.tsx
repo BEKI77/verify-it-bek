@@ -59,8 +59,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const handleAuthCallback = (code: string) => {
-    console.log(`CODE :  ${code}`);
+  const handleAuthCallback = (userData: User) => {
+  if (userData) {
+    setUser(userData);
+    localStorage.setItem('eduverify_user', JSON.stringify(userData));
+  } else {
+    console.error("Invalid user data received during authentication callback");
+  }
   };
 
   const logout = () => {

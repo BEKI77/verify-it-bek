@@ -27,7 +27,7 @@ export interface Certificate {
 export interface AuthContextType {
   user: User | null;
   login: (email: string, role: User['role']) => void;
-  handleAuthCallback: (code:string) => void;
+  handleAuthCallback: (user:User) => void;
   logout: () => void;
   isAuthenticated: boolean;
 }

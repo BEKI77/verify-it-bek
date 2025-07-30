@@ -53,31 +53,48 @@ const Sidebar: React.FC = () => {
   const menuItems = getMenuItems();
 
   return (
-    <div className="w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 h-full">
+    <aside className="fixed top-16 left-0 z-40 w-64 min-h-screen bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 overflow-y-auto flex-shrink-0">
       <div className="p-6">
-        <div className="space-y-1">
+        {/* User role indicator */}
+        <div className="mb-6 pb-4 border-b border-gray-200 dark:border-gray-700">
+          <div className="flex items-center space-x-2">
+            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+            <span className="text-sm font-medium text-gray-600 dark:text-gray-400 capitalize">
+              {user.role} Dashboard
+            </span>
+          </div>
+        </div>
+
+        {/* Navigation menu */}
+        <nav className="space-y-1">
           {menuItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = location.pathname === item.path;
-            
+            const Icon = item.icon
+            const isActive = location.pathname === item.path
+
             return (
               <Link
                 key={item.path}
                 to={item.path}
-                className={`flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                className={`flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors group ${
                   isActive
-                    ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-200'
-                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
+                    ? "bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-200"
+                    : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-100"
                 }`}
               >
-                <Icon className="h-5 w-5" />
+                <Icon
+                  className={`h-5 w-5 ${
+                    isActive
+                      ? "text-blue-600 dark:text-blue-400"
+                      : "text-gray-500 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-300"
+                  }`}
+                />
                 <span>{item.label}</span>
               </Link>
-            );
+            )
           })}
-        </div>
+        </nav>
       </div>
-    </div>
+    </aside>
   );
 };
 

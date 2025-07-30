@@ -1,12 +1,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Shield, CheckCircle, Users, FileText, Search, ArrowRight } from 'lucide-react';
+import Navbar from '../components/Layout/Navbar';
 
 const LandingPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-900 dark:to-blue-900">
+      <Navbar />
       {/* Hero Section */}
-      <div className="relative overflow-hidden">
+      <div className="relative overflow-hidden min-h-screen flex items-center">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16">
           <div className="text-center">
             <div className="flex justify-center mb-6">
