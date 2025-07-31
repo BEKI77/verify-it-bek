@@ -13,6 +13,7 @@ export const useTheme = () => {
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  const [showSidebar, setShowSidebar] = useState<boolean>(true);
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('eduverify_theme') as 'light' | 'dark';
@@ -30,12 +31,25 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     localStorage.setItem('eduverify_theme', theme);
   }, [theme]);
 
+  useEffect(() => {
+    const handleResize = () => {
+      setShowSidebar(window.innerWidth >= 768); 
+    };
+
+    handleResize(); // Check on initial load
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
   const toggleTheme = () => {
     setTheme(prev => prev === 'light' ? 'dark' : 'light');
   };
 
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+    <ThemeContext.Provider value={{ theme, toggleTheme, showSidebar }}>
       {children}
     </ThemeContext.Provider>
   );

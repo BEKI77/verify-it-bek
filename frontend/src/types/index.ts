@@ -26,7 +26,7 @@ export interface Certificate {
 
 export interface AuthContextType {
   user: User | null;
-  login: (email: string, role: User['role']) => void;
+  login: (email: string, password:string) => Promise<User['role'] | null>;
   handleAuthCallback: (user:User) => void;
   logout: () => void;
   isAuthenticated: boolean;
@@ -35,4 +35,5 @@ export interface AuthContextType {
 export interface ThemeContextType {
   theme: 'light' | 'dark';
   toggleTheme: () => void;
+  showSidebar: boolean;
 }

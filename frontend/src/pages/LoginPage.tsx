@@ -3,11 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Shield, User, Building, Search } from 'lucide-react';
 import Alert from '../components/UI/Alert';
+import axios from 'axios';
 
 const LoginPage: React.FC = () => {
   const [selectedRole, setSelectedRole] = useState<'student' | 'institution' | 'verifier'>('student');
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [showError, setShowError] = useState(false);
   const { login } = useAuth();
   const [faydaUrl, setFaydaUrl] = useState<string>('');
@@ -82,66 +84,33 @@ const LoginPage: React.FC = () => {
   }, []);
 
 
-  const roleOptions = [
-    {
-      value: 'student' as const,
-      label: 'Student',
-      icon: User,
-      description: 'Access and share your certificates',
-      demoEmail: 'student@example.com'
-    },
-    {
-      value: 'institution' as const,
-      label: 'Institution',
-      icon: Building,
-      description: 'Issue and manage certificates',
-      demoEmail: 'institution@example.com'
-    },
-    {
-      value: 'verifier' as const,
-      label: 'Verifier',
-      icon: Search,
-      description: 'Verify certificate authenticity',
-      demoEmail: 'verifier@example.com'
-    }
-  ];
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setShowError(false);
 
-    // Mock login validation
-    const validEmails = {
-      student: 'student@example.com',
-      institution: 'institution@example.com',
-      verifier: 'verifier@example.com'
-    };
-
-    if (email === validEmails[selectedRole]) {
-      login(email, selectedRole);
+    try {
+      const res = await login(email, password);
       
-      // Redirect based on role
+      if(!res){
+        setShowError(true);
+        return null;
+      }
+      
+      setSelectedRole(res);
+      
       const dashboardRoutes = {
-        student: '/student-dashboard',
-        institution: '/institution-dashboard',
-        verifier: '/verifier-dashboard'
+        student: "/student-dashboard",
+        institution: "/institution-dashboard",
+        verifier: "/verifier-dashboard",
       };
-      
-      navigate(dashboardRoutes[selectedRole]);
-    } else {
-      setShowError(true);
-    }
-  };
 
-  const handleDemoLogin = (role: typeof selectedRole) => {
-    const demoEmails = {
-      student: 'student@example.com',
-      institution: 'institution@example.com',
-      verifier: 'verifier@example.com'
-    };
-    
-    setSelectedRole(role);
-    setEmail(demoEmails[role]);
+      navigate(dashboardRoutes[selectedRole]);
+
+    } catch (error) {
+        console.error("Login error:", error);
+        setShowError(true);
+    }
   };
 
   return (
@@ -168,48 +137,6 @@ const LoginPage: React.FC = () => {
           )}
 
           <form onSubmit={handleLogin} className="space-y-6">
-            {/* Role Selection */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-                Select Your Role
-              </label>
-              <div className="grid grid-cols-1 gap-3">
-                {roleOptions.map((option) => {
-                  const Icon = option.icon;
-                  return (
-                    <button
-                      key={option.value}
-                      type="button"
-                      onClick={() => setSelectedRole(option.value)}
-                      className={`p-4 border rounded-lg text-left transition-colors ${
-                        selectedRole === option.value
-                          ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                          : 'border-gray-300 dark:border-gray-600 hover:border-blue-400 dark:hover:border-blue-500'
-                      }`}
-                    >
-                      <div className="flex items-center space-x-3">
-                        <Icon className={`h-5 w-5 ${
-                          selectedRole === option.value ? 'text-blue-600' : 'text-gray-400'
-                        }`} />
-                        <div>
-                          <p className={`font-medium ${
-                            selectedRole === option.value 
-                              ? 'text-blue-900 dark:text-blue-200' 
-                              : 'text-gray-900 dark:text-white'
-                          }`}>
-                            {option.label}
-                          </p>
-                          <p className="text-sm text-gray-500 dark:text-gray-400">
-                            {option.description}
-                          </p>
-                        </div>
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
             {/* Email Input */}
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -224,6 +151,21 @@ const LoginPage: React.FC = () => {
                 onChange={(e) => setEmail(e.target.value)}
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Enter your email"
+              />
+            </div>
+            <div>
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                Password
+            </label>
+              <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Enter your password"
               />
             </div>
             <button
@@ -247,25 +189,6 @@ const LoginPage: React.FC = () => {
             />
             Login with Fayda E-Signet
           </a>
-
-          {/* Demo Accounts */}
-          <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
-            <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-              Demo Accounts
-            </p>
-            <div className="space-y-2">
-              {roleOptions.map((option) => (
-                <button
-                  key={option.value}
-                  onClick={() => handleDemoLogin(option.value)}
-                  className="w-full text-left px-3 py-2 text-sm bg-gray-50 dark:bg-gray-700 rounded-md hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
-                >
-                  <span className="font-medium text-gray-900 dark:text-white">{option.label}:</span>
-                  <span className="text-gray-600 dark:text-gray-400 ml-2">{option.demoEmail}</span>
-                </button>
-              ))}
-            </div>
-          </div>
 
           {/* Institution Signup Link */}
           <div className="mt-6 text-center">

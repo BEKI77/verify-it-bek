@@ -1,30 +1,32 @@
-import React, { useEffect,  useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { SignJWT, importJWK, decodeJwt } from 'jose';
 import { Buffer } from 'buffer';
 import { useAuth } from '../context/AuthContext';
 import { User } from '../types';
-import { toast, ToastContainer } from 'react-toastify'; // Import toast
+import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const AuthCallbackPage: React.FC = () => {
-  const {  handleAuthCallback }  = useAuth();
+  const { handleAuthCallback } = useAuth();
   const navigate = useNavigate();
   const [userInfo, setUserInfo] = useState<any>(null);
-  
+  const [statusMessage, setStatusMessage] = useState('Processing authentication...');
   const location = useLocation();
-  useEffect(() => {
-    const fetchTokenAndUserInfo = async (code :string) => {
-      try {
 
-        const clientId = import.meta.env.VITE_CLIENT_ID ;
+  useEffect(() => {
+    const fetchTokenAndUserInfo = async (code: string) => {
+      try {
+        setStatusMessage('Validating authorization code...');
+        const clientId = import.meta.env.VITE_CLIENT_ID;
         const tokenEndpoint = import.meta.env.VITE_TOKEN_ENDPOINT;
         const redirectUri = import.meta.env.VITE_REDIRECT_URI;
         const clientAssertionType = import.meta.env.VITE_CLIENT_ASSERTION_TYPE;
 
         if (!clientId || !tokenEndpoint || !redirectUri || !clientAssertionType) {
           console.error("Missing required OIDC environment variables");
+          setStatusMessage('Configuration error. Please contact support.');
           return;
         }
 
@@ -32,12 +34,14 @@ const AuthCallbackPage: React.FC = () => {
 
         if (!codeVerifier) {
           console.error("Missing PKCE code_verifier in sessionStorage");
+          setStatusMessage('Session error. Please try logging in again.');
           return;
         }
 
+        setStatusMessage('Generating signed JWT...');
         const signedJwt = await generateSignedJwt(clientId, tokenEndpoint);
 
-
+        setStatusMessage('Exchanging authorization code for tokens...');
         const response = await axios.post(
           '/api/v1/esignet/oauth/v2/token',
           new URLSearchParams({
@@ -54,7 +58,7 @@ const AuthCallbackPage: React.FC = () => {
 
         const { access_token } = response.data;
 
-        
+        setStatusMessage('Fetching user information...');
         const userInfoResponse = await axios.get(import.meta.env.VITE_USERINFO_ENDPOINT, {
           headers: {
             Authorization: `Bearer ${access_token}`
@@ -67,21 +71,16 @@ const AuthCallbackPage: React.FC = () => {
 
         setUserInfo(decoded);
 
-        // If the token end point have worked i would have call the backend to check if the user is already registered or a new comer
-        // then if is's a new  user populate the database with retrived information else fetch the stored user data from
-        // the  back end ---- to  be implemented
-
         handleAuthCallback(decoded as any as User);
 
-        toast.info("Login succssful");
-        // Redirect or render dashboard
+        toast.info("Login successful");
+        setStatusMessage('Redirecting to dashboard...');
         navigate('/student-dashboard');
-
       } catch (error: any) {
         console.error('OIDC flow failed:', error.response?.data || error.message);
 
         toast.error('Login failed. Please try again.');
-
+        setStatusMessage('Authentication failed. Redirecting to login...');
         navigate('/login');
       }
     };
@@ -92,10 +91,27 @@ const AuthCallbackPage: React.FC = () => {
     if (code) {
       fetchTokenAndUserInfo(code);
     }
-
   }, [location.search]);
 
-  return <div>Processing authentication...</div>;
+  return (
+    <div style={{ textAlign: 'center', marginTop: '50px' }}>
+      <div className="spinner" style={{ marginBottom: '20px' }}>
+        <div className="double-bounce1" style={spinnerStyle}></div>
+        <div className="double-bounce2" style={spinnerStyle}></div>
+      </div>
+      <p>{statusMessage}</p>
+    </div>
+  );
+};
+
+const spinnerStyle = {
+  width: '40px',
+  height: '40px',
+  borderRadius: '50%',
+  backgroundColor: '#3498db',
+  animation: 'bounce 2s infinite ease-in-out',
+  display: 'inline-block',
+  margin: '0 5px',
 };
 
 const generateSignedJwt = async (clientId: string, tokenEndpoint: string) => {

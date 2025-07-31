@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { AuthContextType, User } from '../types';
+import axios from 'axios';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -9,34 +10,6 @@ export const useAuth = () => {
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
-};
-
-const mockUsers: Record<string, User> = {
-  'student@example.com': {
-    id: '1',
-    name: 'John Doe',
-    email: 'student@example.com',
-    faydaId: 'FYD-STU-001',
-    role: 'student',
-    schoolName: 'Delhi Public School',
-    avatar: 'https://images.pexels.com/photos/1043471/pexels-photo-1043471.jpeg?auto=compress&cs=tinysrgb&w=150'
-  },
-  'institution@example.com': {
-    id: '2',
-    name: 'Delhi Public School',
-    email: 'institution@example.com',
-    faydaId: 'FYD-INS-001',
-    role: 'institution',
-    contactInfo: '+91 98765 43210',
-    institutionLogo: 'https://images.pexels.com/photos/1586996/pexels-photo-1586996.jpeg?auto=compress&cs=tinysrgb&w=150'
-  },
-  'verifier@example.com': {
-    id: '3',
-    name: 'Tech Corp HR',
-    email: 'verifier@example.com',
-    faydaId: 'FYD-VER-001',
-    role: 'verifier'
-  }
 };
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -51,21 +24,63 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   
 
-  const login = (email: string, role: User['role']) => {
-    const userData = mockUsers[email];
-    if (userData && userData.role === role) {
-      setUser(userData);
-      localStorage.setItem('eduverify_user', JSON.stringify(userData));
+  const login = async (
+    email: string,
+    password: string
+  ): Promise<"student" | "institution" | "verifier" | null> => {
+    try {
+      const response = await axios.post("http://localhost:4000/auth/signIn", { email, password });
+
+      const { message, data } = response.data;
+
+      if (message === "Sign-in successful" && data) {
+        const { registerType, role } = data;
+
+        const role_frontend =
+          role === "admin" || role === "institution"
+            ? role
+            : registerType === "email"
+            ? "verifier"
+            : "student";
+
+        const userData: User = {
+          id: data.id.toString(),
+          email: data.email,
+          role: role_frontend,
+          name: data.email.split("@")[0],
+          faydaId: data.fin || data.fan || "", // Use fin or fan if available
+        };
+        setUser(userData);
+
+        localStorage.setItem("eduverify_user", JSON.stringify(userData));
+        localStorage.setItem("eduverify_user", JSON.stringify(userData));
+        localStorage.setItem("auth_token", data.token);
+      
+        if (
+          role_frontend === "student" ||
+          role_frontend === "institution" ||
+          role_frontend === "verifier"
+        ) {
+          return role_frontend;
+        }
+        return null;
+      } else {
+        console.error("Invalid login response");
+        return null;
+      }
+    } catch (error) {
+      console.error("Login failed:", error);
+      return null;
     }
   };
 
   const handleAuthCallback = (userData: User) => {
-  if (userData) {
-    setUser(userData);
-    localStorage.setItem('eduverify_user', JSON.stringify(userData));
-  } else {
-    console.error("Invalid user data received during authentication callback");
-  }
+    if (userData) {
+      setUser(userData);
+      localStorage.setItem('eduverify_user', JSON.stringify(userData));
+    } else {
+      console.error("Invalid user data received during authentication callback");
+    }
   };
 
   const logout = () => {
@@ -85,3 +100,4 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
+

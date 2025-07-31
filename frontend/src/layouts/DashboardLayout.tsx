@@ -1,5 +1,6 @@
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 import Navbar from '../components/Layout/Navbar';
 import Sidebar from '../components/Layout/Sidebar';
 
@@ -9,6 +10,7 @@ interface DashboardLayoutProps {
 
 const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   const { user } = useAuth();
+  const { showSidebar } = useTheme();
 
   if (!user) {
     return <div>Loading...</div>;
@@ -16,13 +18,17 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-
       <Navbar />
       <Sidebar />
       <main className="">
-        <div className="ml-64 pt-16 min-h-screen ">{children}</div>
+        <div
+          className={`pt-16 min-h-screen transition-all ${
+            showSidebar ? 'ml-64' : 'ml-0'
+          }`}
+        >
+          {children}
+        </div>
       </main>
-  
     </div>
   );
 };
