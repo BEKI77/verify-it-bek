@@ -22,9 +22,23 @@ export class AuthService {
       throw new HttpException('User already exists', HttpStatus.BAD_REQUEST);
     }
 
-    const newUser = await this.userService.createUser(createAuthDto);
+    const newUser = await this.userService.createUser({ ... createAuthDto, role: 'user'});
 
-    return { id: newUser.id, email: newUser.email };
+    const token = jwt.sign(
+      { userId: newUser.id, new: newUser.email, role: newUser.role },
+      process.env.JWT_SECRET, 
+      { expiresIn: '1h' }
+    );
+
+    return { 
+      id: newUser.id, 
+      email: newUser.email, 
+      role:newUser.role, 
+      registerType:newUser.registrationType,
+      fin: newUser.fin,
+      fan: newUser.fin,
+      token
+    };
   }
 
   async signIn(email: string, password: string) {
@@ -41,12 +55,20 @@ export class AuthService {
 
     // Generate JWT token
     const token = jwt.sign(
-      { id: user.id, email: user.email, role: user.role },
+      { userId: user.id, email: user.email, role: user.role },
       process.env.JWT_SECRET, 
       { expiresIn: '1h' }
     );
 
-    return token;
+    return { 
+      id: user.id, 
+      email: user.email, 
+      role:user.role, 
+      registerType:user.registrationType,
+      fin: user.fin,
+      fan: user.fin,
+      token
+    };
   }
 
 }

@@ -58,13 +58,13 @@ export class InstitutionsService {
     });
     if (!institution) throw new NotFoundException('Institution not found');
 
-    const cert = await this.db.select().from(certificates).where(eq(certificates.id, certId.toString()));
+    const cert = await this.db.select().from(certificates).where(eq(certificates.id, certId));
 
     if (!cert[0] || cert[0].institutionId !== institution.id)
       throw new ForbiddenException('Certificate not found or not yours');
 
     await this.db.update(certificates)
       .set({ verified: false })
-      .where(eq(certificates.id, certId.toString()));
+      .where(eq(certificates.id, certId));
   }
 }

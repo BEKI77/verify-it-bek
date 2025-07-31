@@ -19,7 +19,6 @@ export class CertificateService {
     });
 
     const certificate = await this.db.insert(certificates).values({
-      id: crypto.randomUUID(),
       fullName: dto.fullName,
       program: dto.degree,
       institutionId: instituteId,

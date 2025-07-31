@@ -1,8 +1,8 @@
-import { pgTable, varchar, boolean, timestamp, text, uuid, integer } from 'drizzle-orm/pg-core';
+import { pgTable, varchar, boolean, timestamp, text, serial, integer } from 'drizzle-orm/pg-core';
 import { institutions } from './institution.schema';
 
 export const certificates = pgTable('certificates', {
-  id: uuid('user_id').notNull(),
+  id: serial('id').primaryKey(),
   fullName: varchar('full_name', { length: 255 }).notNull(),
   program: varchar('program', { length: 255 }).notNull(),
   fieldOfStudy: text('field_of_study').notNull(),

@@ -19,8 +19,8 @@ export class AuthController {
   @Post('signIn')
   async signIn(@Body() credentials: { email: string; password: string }) {
     try {
-      const token = await this.authService.signIn(credentials.email, credentials.password);
-      return { message: 'Sign-in successful', token };
+      const result = await this.authService.signIn(credentials.email, credentials.password);
+      return { message: 'Sign-in successful',data: result };
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNAUTHORIZED);
     }

@@ -1,6 +1,7 @@
 import { Injectable, ForbiddenException, Logger } from '@nestjs/common';
 import * as jwt from 'jsonwebtoken';
 import { JwtPayload } from 'src/interfaces/user.interface';
+import { Request } from 'express';
 
 @Injectable()
 export class DecoderService {

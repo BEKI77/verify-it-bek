@@ -19,7 +19,7 @@ export class InstitutionsController {
   ) {}
 
   @Post('register')
-  register(@Body() createInstitutionDto: CreateInstitutionDto, req: Request) {
+  register(@Body() createInstitutionDto: CreateInstitutionDto, @Req() req) {
     const user = this.decoderService.decode(req);
     return this.institutionsService.register(createInstitutionDto, user.userId);
   }
