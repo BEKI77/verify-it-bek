@@ -7,7 +7,7 @@ services:
     ports:
       - '4001:4000'
     environment:
-      DATABASE_URL: postgres://postgres:postgres@drizzle_postgres:5432/drizzle_db
+      DATABASE_URL: postgresql://postgres.hlzclxzzapywduzzwvfp:uKNeAlJ47YxJtgCI@aws-0-us-east-2.pooler.supabase.com:6543/postgres
 
   frontend:
     build:
