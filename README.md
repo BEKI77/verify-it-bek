@@ -2,7 +2,7 @@
 
 ## Contributors
 
-- Bereket Tadiwos
+- Bereket Tadiwos [EEmail account link ](berekettadiwos00@gmail.com)
 
 ## Problem Statement
 
