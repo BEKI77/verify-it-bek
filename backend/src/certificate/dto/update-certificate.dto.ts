@@ -1,4 +1,18 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateCertificateDto } from './create-certificate.dto';
+import { IsOptional, IsString, IsDateString, IsEnum } from 'class-validator';
+export class UpdateCertificateDto {
+  @IsOptional()
+  @IsString()
+  degree?: string;
 
-export class UpdateCertificateDto extends PartialType(CreateCertificateDto) {}
+  @IsOptional()
+  @IsString()
+  fieldOfStudy?: string;
+
+  @IsOptional()
+  @IsDateString()
+  issueDate?: string;
+
+  @IsOptional()
+  @IsEnum(['valid', 'revoked'])
+  status?: 'valid' | 'revoked';
+}

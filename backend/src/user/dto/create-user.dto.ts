@@ -19,4 +19,8 @@ export class CreateUserDto {
   @IsString()
   @IsOptional()
   fin?: string;
+
+  @IsString()
+  @IsNotEmpty()
+  registrationType: 'fayda' | 'email';
 }

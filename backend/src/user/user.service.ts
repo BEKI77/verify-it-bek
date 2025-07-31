@@ -38,15 +38,23 @@ export class UserService {
   }
 
   async createUser(user_data: CreateUserDto) {
-    const hashedPassword = await this.passwordHasher.hash(user_data.password);
+
+    const { email, password, fin, fan,role,  } = user_data;
+    const hashedPassword = await this.passwordHasher.hash(password);
+
+     const isFayda = user_data.registrationType === 'fayda';
+
     const  [ user ]  = await this.db
-    .insert(users)
-    .values({
-      ...user_data,  
-      passwordHash: hashedPassword,
-      role: user_data.role || 'user'
-    })
-    .returning();
+      .insert(users)
+      .values({
+        email: user_data.email,
+        passwordHash: hashedPassword,
+        role: user_data.role || 'user',
+        registrationType: user_data.registrationType,
+        fin: isFayda ? user_data.fin : null,
+        fan: isFayda ? user_data.fan : null
+      })
+      .returning();
 
     if(!user){
       throw new Error("User creation failed");

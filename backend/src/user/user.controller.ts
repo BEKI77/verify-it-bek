@@ -1,7 +1,10 @@
 // src/user/user.controller.ts
-import { Controller, Get, Post, Body, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, HttpException, HttpStatus, UseGuards } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserService } from './user.service';
+import { RolesGuard } from 'src/roles/roles.guard';
+import { Roles } from 'src/roles/roles.decorator';
+import { User_Role } from 'src/interfaces/user.interface';
 
 @Controller('users')
 export class UserController {
@@ -43,7 +46,11 @@ export class UserController {
     }
   }
 
-  @Post()
+  
+
+  @Post('create-account')
+  @UseGuards(RolesGuard)
+  @Roles(User_Role.Admin)
   async createUser(@Body() data: CreateUserDto) {
      try {
       const user = await this.userService.createUser(data);

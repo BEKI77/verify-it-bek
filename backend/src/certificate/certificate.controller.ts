@@ -1,34 +1,23 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Req,Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { RolesGuard } from 'src/roles/roles.guard';
 import { CertificateService } from './certificate.service';
 import { CreateCertificateDto } from './dto/create-certificate.dto';
 import { UpdateCertificateDto } from './dto/update-certificate.dto';
+import { Roles } from 'src/roles/roles.decorator';
+import { User_Role } from 'src/interfaces/user.interface';
 
 @Controller('certificate')
 export class CertificateController {
   constructor(private readonly certificateService: CertificateService) {}
-
-  @Post()
-  create(@Body() createCertificateDto: CreateCertificateDto) {
-    return this.certificateService.create(createCertificateDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.certificateService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.certificateService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCertificateDto: UpdateCertificateDto) {
-    return this.certificateService.update(+id, updateCertificateDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.certificateService.remove(+id);
+R
+  @UseGuards(RolesGuard)
+  @Roles(User_Role.Institute)
+  @Post('/institute/issue')
+  async issue(
+    @Body() dto: CreateCertificateDto,
+    @Req() req: any,
+  ) {
+    const instituteId = req.user.sub;
+    return this.certificateService.issueCertificate(dto, instituteId);
   }
 }
