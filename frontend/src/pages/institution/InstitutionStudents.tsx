@@ -10,12 +10,22 @@ interface Student {
   email: string;
   phone: string;
   studentId: string;
+  studentFin: string;
   class: string;
   section: string;
   enrollmentDate: string;
   certificatesCount: number;
   status: 'active' | 'graduated' | 'transferred';
 }
+
+const generateRandomFin = () => {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let fin = '';
+  for (let i = 0; i < 7; i++) {
+    fin += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+  return fin;
+};
 
 const InstitutionStudents: React.FC = () => {
   const { user } = useAuth();
@@ -31,6 +41,7 @@ const InstitutionStudents: React.FC = () => {
     email: '',
     phone: '',
     studentId: '',
+    studentFin: '',
     class: '',
     section: '',
     enrollmentDate: ''
@@ -44,6 +55,7 @@ const InstitutionStudents: React.FC = () => {
       email: 'john.doe@example.com',
       phone: '+91 98765 43210',
       studentId: 'STU001',
+      studentFin: generateRandomFin(),
       class: '12',
       section: 'A',
       enrollmentDate: '2022-04-01',
@@ -56,6 +68,7 @@ const InstitutionStudents: React.FC = () => {
       email: 'jane.smith@example.com',
       phone: '+91 98765 43211',
       studentId: 'STU002',
+      studentFin: generateRandomFin(),
       class: '12',
       section: 'B',
       enrollmentDate: '2022-04-01',
@@ -68,6 +81,7 @@ const InstitutionStudents: React.FC = () => {
       email: 'mike.johnson@example.com',
       phone: '+91 98765 43212',
       studentId: 'STU003',
+      studentFin: generateRandomFin(),
       class: '11',
       section: 'A',
       enrollmentDate: '2023-04-01',
@@ -80,6 +94,7 @@ const InstitutionStudents: React.FC = () => {
       email: 'sarah.wilson@example.com',
       phone: '+91 98765 43213',
       studentId: 'STU004',
+      studentFin: generateRandomFin(),
       class: '10',
       section: 'C',
       enrollmentDate: '2024-04-01',
@@ -92,6 +107,7 @@ const InstitutionStudents: React.FC = () => {
       email: 'david.brown@example.com',
       phone: '+91 98765 43214',
       studentId: 'STU005',
+      studentFin: generateRandomFin(),
       class: '12',
       section: 'A',
       enrollmentDate: '2021-04-01',
@@ -122,6 +138,7 @@ const InstitutionStudents: React.FC = () => {
       email: '',
       phone: '',
       studentId: '',
+      studentFin:'',
       class: '',
       section: '',
       enrollmentDate: ''
@@ -394,6 +411,19 @@ const InstitutionStudents: React.FC = () => {
                 placeholder="e.g., STU006"
               />
             </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Student FIN/FAN
+            </label>
+            <input
+              type="text"
+              value={newStudent.studentFin}
+              onChange={(e) => setNewStudent({...newStudent, studentFin: e.target.value})}
+              required
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-blue-500 focus:border-blue-500"
+              placeholder="e.g., 12345678"
+            />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Upload, User, Calendar, FileText, Save, Plus } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import Sidebar from '../../components/Layout/Sidebar';
 import FileUpload from '../../components/UI/FileUpload';
 import Alert from '../../components/UI/Alert';
 
@@ -15,6 +14,7 @@ const InstitutionUpload: React.FC = () => {
     studentName: '',
     studentId: '',
     studentEmail: '',
+    studentFin:'',
     certificateType: '',
     issueDate: '',
     validUntil: '',
@@ -66,6 +66,7 @@ const InstitutionUpload: React.FC = () => {
       studentName: '',
       studentId: '',
       studentEmail: '',
+      studentFin:'',
       certificateType: '',
       issueDate: '',
       validUntil: '',
@@ -165,6 +166,20 @@ const InstitutionUpload: React.FC = () => {
                       type="email"
                       name="studentEmail"
                       value={formData.studentEmail}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="student@example.com"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Student FIN/FAN
+                    </label>
+                    <input
+                      type="number"
+                      name="studentFin"
+                      value={formData.studentFin}
                       onChange={handleInputChange}
                       className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-blue-500 focus:border-blue-500"
                       placeholder="student@example.com"
