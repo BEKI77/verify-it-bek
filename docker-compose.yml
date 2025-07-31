@@ -1,25 +1,11 @@
 services:
-  postgres:
-    image: postgres:15
-    container_name: drizzle_postgres
-    ports:
-      - '5432:5432'
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: drizzle_db
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
     container_name: backend_app
     ports:
-      - '4000:4000'
-    depends_on:
-      - postgres
+      - '4001:4000'
     environment:
       DATABASE_URL: postgres://postgres:postgres@drizzle_postgres:5432/drizzle_db
 
