@@ -7,7 +7,7 @@ services:
     ports:
       - '4001:4000'
     environment:
-      DATABASE_URL: postgresql://postgres.hlzclxzzapywduzzwvfp:uKNeAlJ47YxJtgCI@aws-0-us-east-2.pooler.supabase.com:6543/postgres
+      DATABASE_URL: ".env value for the databae url"
 
   frontend:
     build:

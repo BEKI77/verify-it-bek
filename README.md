@@ -78,15 +78,7 @@ To run the application using Docker Compose:
 docker-compose up --build -d
 ```
 
-4. If this is your first time running the application, you need to migrate the backend schema file before starting the services while the docker compose is running. Run the following command in the `backend` directory:
-
-   ```bash
-   cd backend
-   npm run db:generate
-   npm run db:migrate
-   ```
-
-5. Access the application at http://localhost:3000 for the frontend and the appropriate port for the backend
+4. Access the application at http://localhost:3000 for the frontend and the appropriate port for the backend
 
 ## License
 
