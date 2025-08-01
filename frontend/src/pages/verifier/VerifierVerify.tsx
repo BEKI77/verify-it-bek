@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Search, QrCode, CheckCircle, XCircle, AlertCircle, Download, FileText } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import Sidebar from '../../components/Layout/Sidebar';
 import Alert from '../../components/UI/Alert';
 import { Certificate } from '../../types';
 
@@ -12,6 +11,18 @@ const VerifierVerify: React.FC = () => {
   const [showAlert, setShowAlert] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
   const [searchHistory, setSearchHistory] = useState<string[]>([]);
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const file = e.target.files?.[0];
+  if (file) {
+    // Perform validation or processing of the PDF file
+    console.log('Uploaded file:', file);
+
+    // Example: Display an alert for demo purposes
+    setShowAlert(true);
+    setTimeout(() => setShowAlert(false), 3000);
+  }
+};
 
   // Mock certificate data for demonstration
   const mockCertificate: Certificate = {
@@ -133,7 +144,7 @@ const VerifierVerify: React.FC = () => {
                 <form onSubmit={handleSearch} className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Verification Code or Student Name
+                      Verification Code
                     </label>
                     <div className="flex space-x-4">
                       <div className="flex-1 relative">
@@ -165,13 +176,22 @@ const VerifierVerify: React.FC = () => {
                     </div>
                   </div>
 
-                  <button
-                    type="button"
-                    className="w-full flex items-center justify-center space-x-2 py-3 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg text-gray-600 dark:text-gray-400 hover:border-blue-400 dark:hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                  >
-                    <QrCode className="h-6 w-6" />
-                    <span>Scan QR Code</span>
-                  </button>
+                  <div className="w-full flex items-center justify-center space-x-2 py-3 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg text-gray-600 dark:text-gray-400 hover:border-blue-400 dark:hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                    <input
+                      type="file"
+                      accept="application/pdf"
+                      onChange={(e) => handleFileUpload(e)}
+                      className="hidden"
+                      id="pdf-upload"
+                    />
+                    <label
+                      htmlFor="pdf-upload"
+                      className="cursor-pointer flex items-center space-x-2"
+                    >
+                      <FileText className="h-6 w-6" />
+                      <span>Upload PDF File</span>
+                    </label>
+                  </div>
                 </form>
 
                 {/* Quick Search Examples */}
