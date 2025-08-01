@@ -7,6 +7,8 @@ import { DecoderService } from 'src/decoder/decoder.service';
 import { RolesGuard } from 'src/roles/roles.guard';
 import { Roles } from 'src/roles/roles.decorator';
 import { User_Role } from 'src/interfaces/user.interface';
+import { UserService } from 'src/user/user.service';
+import { CreateUserDto } from 'src/user/dto/create-user.dto';
 
 
 @Controller('institutions')
@@ -15,13 +17,22 @@ import { User_Role } from 'src/interfaces/user.interface';
 export class InstitutionsController {
   constructor(
     private readonly institutionsService: InstitutionsService,
+    private readonly userService: UserService,
     private readonly decoderService: DecoderService
   ) {}
 
   @Post('register')
-  register(@Body() createInstitutionDto: CreateInstitutionDto, @Req() req) {
-    const user = this.decoderService.decode(req);
-    return this.institutionsService.register(createInstitutionDto, user.userId);
+  async register(@Body() createInstitutionDto: CreateInstitutionDto, @Req() req) {
+    
+    const  initialInstituteAccount:CreateUserDto = {
+      email: createInstitutionDto.email,
+      password: `${createInstitutionDto.name}@123`,
+      registrationType: 'email',
+      role:'institution'
+    }
+    const user = await this.userService.createUser(initialInstituteAccount);
+
+    return this.institutionsService.register(createInstitutionDto, user.id);
   }
 
   @Post('issue')

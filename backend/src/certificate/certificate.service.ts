@@ -31,15 +31,14 @@ export class CertificateService {
     return certificate;
   }
   
-  generateCertificateHash({ userId, instituteId, degree, fieldOfStudy, issueDate, }:{
-      userId: string;
+  generateCertificateHash({ instituteId, degree, fieldOfStudy, issueDate, }:{
       instituteId: number;
       degree: string;
       fieldOfStudy: string;
       issueDate: string;
     }): string {
 
-    const raw = `${userId}|${instituteId}|${degree}|${fieldOfStudy}|${issueDate}`;
+    const raw = `${instituteId}|${degree}|${fieldOfStudy}|${issueDate}`;
     return crypto.createHash('sha256').update(raw).digest('hex');
   }
 

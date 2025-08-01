@@ -28,39 +28,39 @@ export class InstitutionsService {
   }
 
   async issueCertificate(dto: CreateCertificateDto, userId: number) {
-    // 1. Find institution owned by user
-    const institution = await this.db.query.institutions.findFirst({
-      where: (i) => eq(i.userId, userId),
-    });
+    const institution = await this.db.select()
+    .from(institutions)
+    .where(eq(institutions.userId, userId))
+    .limit(1);
+     
 
-    if (!institution || !institution.approved)
+    if (!institution || !institution[0].approved)
       throw new ForbiddenException('Institution not found or not approved');
 
-    const certificate = await this.certificatService.issueCertificate(dto, institution.id);
-
+    const certificate = await this.certificatService.issueCertificate(dto, institution[0].id);
 
     return certificate;
   }
 
   async getMyCertificates(userId: number) {
-    const institution = await this.db.query.institutions.findFirst({
-      where: (i) => eq(i.userId, userId),
-    });
+    const institution = await this.db.select()
+    .from(institutions)
+    .where(eq(institutions.userId, userId))
+    .limit(1);
 
     if (!institution) throw new NotFoundException('Institution not found');
 
-    return this.db.select().from(certificates).where(eq(certificates.institutionId, institution.id));
+    return this.db.select().from(certificates).where(eq(certificates.institutionId, institution[0].id));
   }
 
   async revokeCertificate(certId: number, userId: number) {
-    const institution = await this.db.query.institutions.findFirst({
-      where: (i) => eq(i.userId, userId),
-    });
+    const institution = await this.db.select().from(institutions).where(eq(institutions.userId, userId));
+ 
     if (!institution) throw new NotFoundException('Institution not found');
 
     const cert = await this.db.select().from(certificates).where(eq(certificates.id, certId));
 
-    if (!cert[0] || cert[0].institutionId !== institution.id)
+    if (!cert[0] || cert[0].institutionId !== institution[0].id)
       throw new ForbiddenException('Certificate not found or not yours');
 
     await this.db.update(certificates)

@@ -4,10 +4,11 @@ import { InstitutionsController } from './institutions.controller'
 import { DbModule } from 'src/db/db.module';
 import { CertificateService } from 'src/certificate/certificate.service';
 import { DecoderService } from 'src/decoder/decoder.service';
+import { UserService } from 'src/user/user.service';
 
 @Module({
   imports:[DbModule],
   controllers: [InstitutionsController],
-  providers: [InstitutionsService, CertificateService, DecoderService],
+  providers: [InstitutionsService, CertificateService, UserService],
 })
 export class InstitutionsModule {}
