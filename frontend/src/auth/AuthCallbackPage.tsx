@@ -86,8 +86,9 @@ const AuthCallbackPage: React.FC = () => {
     };
 
     const queryParams = new URLSearchParams(location.search);
+    // console.log(location.search);
     const code = queryParams.get('code');
-
+    // console.log(code);
     if (code) {
       fetchTokenAndUserInfo(code);
     }
@@ -116,25 +117,26 @@ const spinnerStyle = {
 
 const generateSignedJwt = async (clientId: string, tokenEndpoint: string) => {
   const now = Math.floor(Date.now() / 1000);
-  const exp = now + 15 * 60; // match Python's 15 min expiration
+  const exp = now + 15 * 60; 
 
   const privateJwkStr = Buffer.from(import.meta.env.VITE_PRIVATE_KEY, 'base64').toString('utf-8');
   const jwkJson = JSON.parse(privateJwkStr);
 
   const privateKey = await importJWK(jwkJson, 'RS256');
 
-  console.log(privateKey);
+  console.log(jwkJson.kid);
 
   const jwt = await new SignJWT({
     iss: clientId,
     sub: clientId,
     aud: tokenEndpoint,
     iat: now,
-    exp: exp
+    exp: exp,
+    jti: `${now}`
   })
     .setProtectedHeader({
       alg: 'RS256',
-      typ: 'JWT',
+      // typ: 'JWT',
       ...(jwkJson.kid && { kid: jwkJson.kid })
     })
     .sign(privateKey);

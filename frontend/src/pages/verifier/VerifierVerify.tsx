@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
-import { Search, QrCode, CheckCircle, XCircle, AlertCircle, Download, FileText } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
+import { Search, CheckCircle, XCircle, AlertCircle, Download, FileText } from 'lucide-react';
 import Alert from '../../components/UI/Alert';
 import { Certificate } from '../../types';
 
 const VerifierVerify: React.FC = () => {
-  const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [verificationResult, setVerificationResult] = useState<Certificate | null>(null);
   const [showAlert, setShowAlert] = useState(false);
@@ -13,16 +11,13 @@ const VerifierVerify: React.FC = () => {
   const [searchHistory, setSearchHistory] = useState<string[]>([]);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-  const file = e.target.files?.[0];
-  if (file) {
-    // Perform validation or processing of the PDF file
-    console.log('Uploaded file:', file);
-
-    // Example: Display an alert for demo purposes
-    setShowAlert(true);
-    setTimeout(() => setShowAlert(false), 3000);
-  }
-};
+    const file = e.target.files?.[0];
+    if (file) {
+      console.log('Uploaded file:', file);
+      setShowAlert(true);
+      setTimeout(() => setShowAlert(false), 3000);
+    }
+  };
 
   // Mock certificate data for demonstration
   const mockCertificate: Certificate = {
@@ -129,7 +124,7 @@ const VerifierVerify: React.FC = () => {
               Verify Certificate
             </h1>
             <p className="text-gray-600 dark:text-gray-400">
-              Enter a verification code or scan QR code to verify certificate authenticity
+              Enter a verification code to verify certificate authenticity
             </p>
           </div>
 
@@ -154,7 +149,7 @@ const VerifierVerify: React.FC = () => {
                           value={searchQuery}
                           onChange={(e) => setSearchQuery(e.target.value)}
                           className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-blue-500 focus:border-blue-500"
-                          placeholder="Enter verification code or student name"
+                          placeholder="Enter verification code"
                         />
                       </div>
                       <button
@@ -358,7 +353,7 @@ const VerifierVerify: React.FC = () => {
                   </div>
                   <div className="flex items-start space-x-2">
                     <span className="flex-shrink-0 w-5 h-5 bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center text-xs font-bold">2</span>
-                    <p>Or scan the QR code using your device camera</p>
+                    <p>Or upload the pdf file</p>
                   </div>
                   <div className="flex items-start space-x-2">
                     <span className="flex-shrink-0 w-5 h-5 bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center text-xs font-bold">3</span>

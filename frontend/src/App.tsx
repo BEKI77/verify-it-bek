@@ -19,6 +19,7 @@ import VerifierReports from './pages/verifier/VerifierReports';
 import NotFoundPage from './pages/NotFoundPage';
 import AuthCallbackPage from './auth/AuthCallbackPage';
 import DashboardLayout from './layouts/DashboardLayout';
+import { InstitutionProvider } from './context/InstitutionContext';
 
 const ProtectedRoute: React.FC<{ 
   children: React.ReactNode; 
@@ -79,15 +80,17 @@ const AppRoutes: React.FC = () => {
             path="/institution-dashboard/*" 
             element={
               <ProtectedRoute allowedRoles={['institution']}>
-                <DashboardLayout>
-                  <Routes>
-                    <Route path="" element={<InstitutionDashboard />} />
-                    <Route path="upload" element={<InstitutionUpload />} />
-                    <Route path="certificates" element={<InstitutionCertificates />} />
-                    <Route path="students" element={<InstitutionStudents />} />
-                    <Route path="analytics" element={<InstitutionAnalytics />} />
-                  </Routes>
-                </DashboardLayout>
+                <InstitutionProvider>
+                  <DashboardLayout>
+                    <Routes>
+                      <Route path="" element={<InstitutionDashboard />} />
+                      <Route path="upload" element={<InstitutionUpload />} />
+                      <Route path="certificates" element={<InstitutionCertificates />} />
+                      <Route path="students" element={<InstitutionStudents />} />
+                      <Route path="analytics" element={<InstitutionAnalytics />} />
+                    </Routes>
+                  </DashboardLayout>
+                </InstitutionProvider>
               </ProtectedRoute>
             } 
           />

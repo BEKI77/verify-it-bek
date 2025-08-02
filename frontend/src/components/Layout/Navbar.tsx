@@ -1,13 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
-import { Shield, Moon, Sun, LogOut, User } from 'lucide-react';
+import { Shield, Moon, Sun, LogOut, User, Menu, X } from 'lucide-react';
 
 const Navbar: React.FC = () => {
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const location = useLocation();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -33,25 +34,41 @@ const Navbar: React.FC = () => {
             </Link>
           </div>
 
+          {/* Mobile menu toggle */}
+          <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="sm:hidden p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+          >
+            {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </button>
+
           {/* Right side items */}
-          <div className="flex items-center space-x-4">
+          <div
+            className={`${
+              isMobileMenuOpen ? 'block' : 'hidden'
+            } sm:flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4 absolute sm:static top-16 left-0 right-0 bg-white dark:bg-gray-900 sm:bg-transparent sm:dark:bg-transparent p-4 sm:p-0 shadow-md sm:shadow-none`}
+          >
             {/* Theme toggle */}
-            <button
-              onClick={toggleTheme}
-              className="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
-            >
-              {theme === "light" ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
-            </button>
+            <div className='w-full flex justify-center'>
+              <button
+                onClick={toggleTheme}
+                className="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+              >
+                {theme === 'light' ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
+              </button>
+
+            </div>
+
 
             {user ? (
-              <div className="flex items-center space-x-4">
+              <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4">
                 {/* Dashboard link */}
                 <Link
                   to={getDashboardPath()}
                   className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                     isActive(getDashboardPath())
-                      ? "bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-200"
-                      : "text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
+                      ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-200'
+                      : 'text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400'
                   }`}
                 >
                   Dashboard
@@ -61,7 +78,7 @@ const Navbar: React.FC = () => {
                 <div className="flex items-center space-x-2">
                   {user.avatar ? (
                     <img
-                      src={user.avatar || "/placeholder.svg"}
+                      src={user.avatar || '/placeholder.svg'}
                       alt={user.name}
                       className="h-8 w-8 rounded-full object-cover"
                     />

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Shield, User, Building, Search } from 'lucide-react';
+import { Shield } from 'lucide-react';
 import Alert from '../components/UI/Alert';
-import axios from 'axios';
+import { Buffer } from 'buffer';
 
 const LoginPage: React.FC = () => {
   const [selectedRole, setSelectedRole] = useState<'student' | 'institution' | 'verifier'>('student');
@@ -15,30 +15,25 @@ const LoginPage: React.FC = () => {
   const [faydaUrl, setFaydaUrl] = useState<string>('');
 
 
-  async function generateCodeChallenge(verifier: string) {
+  function base64URLEncode(buffer: ArrayBuffer): string {
+    return Buffer.from(buffer)
+      .toString("base64")
+      .replace(/\+/g, "-")
+      .replace(/\//g, "_")
+      .replace(/=+$/, "");
+  }
+
+  function generateCodeVerifier(): string {
+    const array = new Uint8Array(32);
+    crypto.getRandomValues(array);
+    return base64URLEncode(array);
+  }
+
+  async function generateCodeChallenge(codeVerifier: string): Promise<string> {
     const encoder = new TextEncoder();
-    const data = encoder.encode(verifier);
-    const digest = await crypto.subtle.digest('SHA-256', data);
-    return base64UrlEncode(new Uint8Array(digest));
-  }
-
-  function base64UrlEncode(buffer : any) {
-    return btoa(String.fromCharCode(...buffer))
-      .replace(/\+/g, '-')
-      .replace(/\//g, '_')
-      .replace(/=+$/, '');
-  }
-
-
-  function generateCodeVerifier(length = 43) {
-    const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~';
-    let verifier = '';
-    const values = new Uint8Array(length);
-    crypto.getRandomValues(values);
-    for (let i = 0; i < length; i++) {
-      verifier += charset[values[i] % charset.length];
-    }
-    return verifier;
+    const data = encoder.encode(codeVerifier);
+    const digest = await crypto.subtle.digest("SHA-256", data);
+    return base64URLEncode(digest);
   }
 
   const code_Verifier = generateCodeVerifier();
@@ -182,7 +177,7 @@ const LoginPage: React.FC = () => {
             className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-md bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold shadow hover:from-blue-700 hover:to-indigo-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           >
             <img
-              src="https://fayda.id/assets/fayda-logo.svg"
+              src="https://imgs.search.brave.com/9zacFQNUS0aYVBWv7KLmQy0exWyfu1pMQ_a5AFp48cU/rs:fit:32:32:1:0/g:ce/aHR0cDovL2Zhdmlj/b25zLnNlYXJjaC5i/cmF2ZS5jb20vaWNv/bnMvN2RmODAxMTJl/MTY0MTI3MDc2ZTFh/NjI3YWRiODQ0OTli/MzFiOGQ4YjM0NGY0/YmI5NTk0ZDdmOGVh/MDQwYTZlOC9pZC5l/dC8"
               alt="Fayda E-Signet"
               className="h-5 w-5 mr-2"
               style={{ background: 'white', borderRadius: '50%' }}
