@@ -1,3 +1,4 @@
+CREATE TYPE "public"."revokeStatus" AS ENUM('valid', 'revoked');--> statement-breakpoint
 CREATE TYPE "public"."registration_type" AS ENUM('fayda', 'email');--> statement-breakpoint
 CREATE TYPE "public"."role" AS ENUM('admin', 'institution', 'user');--> statement-breakpoint
 CREATE TYPE "public"."status" AS ENUM('valid', 'invalid', 'pending');--> statement-breakpoint
@@ -10,13 +11,14 @@ CREATE TABLE "audit_logs" (
 );
 --> statement-breakpoint
 CREATE TABLE "certificates" (
-	"id" serial PRIMARY KEY NOT NULL,
+	"certificateId" uuid PRIMARY KEY NOT NULL,
 	"full_name" varchar(255) NOT NULL,
 	"program" varchar(255) NOT NULL,
 	"field_of_study" text NOT NULL,
 	"institution_id" integer NOT NULL,
 	"issued_at" timestamp with time zone NOT NULL,
 	"expires_at" timestamp with time zone,
+	"status" "revokeStatus" NOT NULL,
 	"file_url" varchar(500),
 	"verified" boolean DEFAULT false,
 	"hash" varchar(128),
@@ -50,7 +52,7 @@ CREATE TABLE "users" (
 --> statement-breakpoint
 CREATE TABLE "verifications" (
 	"id" serial PRIMARY KEY NOT NULL,
-	"certificate_id" integer NOT NULL,
+	"certificate_id" uuid NOT NULL,
 	"verified_by_ip" varchar(45) NOT NULL,
 	"status" "status" NOT NULL,
 	"checked_at" timestamp with time zone DEFAULT now(),
@@ -60,4 +62,4 @@ CREATE TABLE "verifications" (
 ALTER TABLE "audit_logs" ADD CONSTRAINT "audit_logs_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "certificates" ADD CONSTRAINT "certificates_institution_id_institutions_id_fk" FOREIGN KEY ("institution_id") REFERENCES "public"."institutions"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "institutions" ADD CONSTRAINT "institutions_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "verifications" ADD CONSTRAINT "verifications_certificate_id_certificates_id_fk" FOREIGN KEY ("certificate_id") REFERENCES "public"."certificates"("id") ON DELETE no action ON UPDATE no action;
+ALTER TABLE "verifications" ADD CONSTRAINT "verifications_certificate_id_certificates_certificateId_fk" FOREIGN KEY ("certificate_id") REFERENCES "public"."certificates"("certificateId") ON DELETE no action ON UPDATE no action;

@@ -1,5 +1,5 @@
 {
-  "id": "cdae655c-beee-41d8-b41b-d4e53e0284e6",
+  "id": "1cac3eab-723f-4c37-bf2a-a832cc95e730",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -66,9 +66,9 @@
       "name": "certificates",
       "schema": "",
       "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
+        "certificateId": {
+          "name": "certificateId",
+          "type": "uuid",
           "primaryKey": true,
           "notNull": true
         },
@@ -107,6 +107,13 @@
           "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "revokeStatus",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
         },
         "file_url": {
           "name": "file_url",
@@ -332,7 +339,7 @@
         },
         "certificate_id": {
           "name": "certificate_id",
-          "type": "integer",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": true
         },
@@ -365,15 +372,15 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "verifications_certificate_id_certificates_id_fk": {
-          "name": "verifications_certificate_id_certificates_id_fk",
+        "verifications_certificate_id_certificates_certificateId_fk": {
+          "name": "verifications_certificate_id_certificates_certificateId_fk",
           "tableFrom": "verifications",
           "tableTo": "certificates",
           "columnsFrom": [
             "certificate_id"
           ],
           "columnsTo": [
-            "id"
+            "certificateId"
           ],
           "onDelete": "no action",
           "onUpdate": "no action"
@@ -387,6 +394,14 @@
     }
   },
   "enums": {
+    "public.revokeStatus": {
+      "name": "revokeStatus",
+      "schema": "public",
+      "values": [
+        "valid",
+        "revoked"
+      ]
+    },
     "public.registration_type": {
       "name": "registration_type",
       "schema": "public",

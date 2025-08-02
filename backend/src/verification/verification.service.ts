@@ -1,26 +1,44 @@
-import { Injectable } from '@nestjs/common';
-import { CreateVerificationDto } from './dto/create-verification.dto';
-import { UpdateVerificationDto } from './dto/update-verification.dto';
-
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { DB } from 'src/db/db.module';
+import { DrizzleDB } from 'src/db/types/db';
+import { certificates } from 'src/db/schema/certificate.schema';
+import { eq } from 'drizzle-orm';
 @Injectable()
 export class VerificationService {
-  create(createVerificationDto: CreateVerificationDto) {
-    return 'This action adds a new verification';
-  }
+  constructor(
+    @Inject(DB)
+    private readonly db: DrizzleDB,
+  ){}
+  async verifyCertificateById(certificateId: string) {
+    const cert = await this.db.query.certificates.findFirst({
+      where: eq(certificates.certificateId, certificateId),
+      with: {
+        institution: true,
+      },
+    });
 
-  findAll() {
-    return `This action returns all verification`;
-  }
+    if (!cert) {
+      throw new NotFoundException('Certificate not found');
+    }
 
-  findOne(id: number) {
-    return `This action returns a #${id} verification`;
-  }
+    if (cert.status === 'revoked') {
+      return {
+        valid: false,
+        reason: 'Certificate has been revoked',
+        certificate: null,
+      };
+    }
 
-  update(id: number, updateVerificationDto: UpdateVerificationDto) {
-    return `This action updates a #${id} verification`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} verification`;
+    return {
+      valid: true,
+      certificate: {
+        fullName: cert.fullName,
+        degree: cert.program,
+        fieldOfStudy: cert.fieldOfStudy,
+        issuedAt: cert.issuedAt,
+        certificateId: cert.certificateId,
+        institution: cert.institutionId,
+      },
+    };
   }
 }

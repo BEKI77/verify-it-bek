@@ -25,7 +25,6 @@ export class UserService {
 
   async findAll() {
     const  users_data  =  await this.db.select(userPublicSelect).from(users);
-
     return users_data;
   }
 
@@ -39,10 +38,12 @@ export class UserService {
 
   async createUser(user_data: CreateUserDto) {
 
-    const { email, password, fin, fan,role,  } = user_data;
+    const { password } = user_data;
     const hashedPassword = await this.passwordHasher.hash(password);
 
-     const isFayda = user_data.registrationType === 'fayda';
+    
+
+    const isFayda = user_data.registrationType === 'fayda';
 
     const  [ user ]  = await this.db
       .insert(users)
@@ -50,7 +51,7 @@ export class UserService {
         email: user_data.email,
         passwordHash: hashedPassword,
         role: user_data.role || 'user',
-        registrationType: user_data.registrationType,
+        registrationType: user_data.registrationType==='email'? 'email':'fayda',
         fin: isFayda ? user_data.fin : null,
         fan: isFayda ? user_data.fan : null
       })

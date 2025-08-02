@@ -1,34 +1,51 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Query,
+  Get,
+  Res,
+  HttpStatus,
+} from '@nestjs/common';
+import { Response } from 'express';
 import { VerificationService } from './verification.service';
-import { CreateVerificationDto } from './dto/create-verification.dto';
-import { UpdateVerificationDto } from './dto/update-verification.dto';
 
-@Controller('verification')
+@Controller('verify')
 export class VerificationController {
-  constructor(private readonly verificationService: VerificationService) {}
-
-  @Post()
-  create(@Body() createVerificationDto: CreateVerificationDto) {
-    return this.verificationService.create(createVerificationDto);
-  }
+  constructor(
+    private readonly verificationService: VerificationService
+  ) {}
 
   @Get()
-  findAll() {
-    return this.verificationService.findAll();
-  }
+  async verify(@Query('certificateId') certificateId: string, @Res() res: Response) {
+    if (!certificateId) {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        success: false,
+        message: 'Missing certificateId parameter',
+        data: null,
+      });
+    }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.verificationService.findOne(+id);
-  }
+    try {
+      const result = await this.verificationService.verifyCertificateById(certificateId);
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateVerificationDto: UpdateVerificationDto) {
-    return this.verificationService.update(+id, updateVerificationDto);
-  }
+      if (!result.valid) {
+        return res.status(HttpStatus.FORBIDDEN).json({
+          success: false,
+          message: result.reason,
+          data: null,
+        });
+      }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.verificationService.remove(+id);
+      return res.status(HttpStatus.OK).json({
+        success: true,
+        message: 'Certificate is valid',
+        data: result.certificate,
+      });
+    } catch (error) {
+      return res.status(HttpStatus.NOT_FOUND).json({
+        success: false,
+        message: error.message || 'Certificate not found',
+        data: null,
+      });
+    }
   }
 }

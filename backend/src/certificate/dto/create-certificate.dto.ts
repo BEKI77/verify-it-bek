@@ -1,28 +1,29 @@
 import {
-  IsUUID,
   IsString,
   IsDateString,
-  IsEnum,
-  IsBoolean,
+  IsNumber,
+  IsNotEmpty
 } from 'class-validator';
 
 export class CreateCertificateDto {
-  @IsUUID()
-  userId: string;
-
   @IsString()
+  @IsNotEmpty()
   fullName: string;
   
   @IsString()
+  @IsNotEmpty()
   degree: string;
 
   @IsString()
+  @IsNotEmpty()
   fieldOfStudy: string;
 
   @IsDateString()
-  issueDate: string;
+  @IsNotEmpty()
+  issuedAt: string;
 
-  @IsBoolean()
-  status: boolean;
+  @IsNumber()
+  @IsNotEmpty()
+  institutionId: number;
 
 }

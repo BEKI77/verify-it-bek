@@ -1,14 +1,15 @@
-import { Controller, Get,Post, Body, Patch, Param, Delete, UseGuards, Req } from '@nestjs/common';
+import { Controller, Get,Post, Body, Patch, Param, UploadedFile, UseInterceptors, UseGuards, Req } from '@nestjs/common';
+import { File as MulterFile } from 'multer';
 import { InstitutionsService } from './institutions.service';
 import { CreateInstitutionDto } from './dto/create-institution.dto';
 import { CreateCertificateDto } from 'src/certificate/dto/create-certificate.dto';
-import { UpdateInstitutionDto } from './dto/update-institution.dto';
-import { DecoderService } from 'src/decoder/decoder.service';
 import { RolesGuard } from 'src/roles/roles.guard';
 import { Roles } from 'src/roles/roles.decorator';
 import { User_Role } from 'src/interfaces/user.interface';
 import { UserService } from 'src/user/user.service';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { UUID } from 'crypto';
 
 
 @Controller('institutions')
@@ -18,12 +19,11 @@ export class InstitutionsController {
   constructor(
     private readonly institutionsService: InstitutionsService,
     private readonly userService: UserService,
-    private readonly decoderService: DecoderService
   ) {}
 
   @Post('register')
   async register(@Body() createInstitutionDto: CreateInstitutionDto, @Req() req) {
-    
+
     const  initialInstituteAccount:CreateUserDto = {
       email: createInstitutionDto.email,
       password: `${createInstitutionDto.name}@123`,
@@ -46,7 +46,7 @@ export class InstitutionsController {
   }
 
   @Patch('revoke/:id')
-  revoke(@Param('id') id: string, @Req() req) {
-    return this.institutionsService.revokeCertificate(parseInt(id), req.user.sub);
+  revoke(@Param('id') id: UUID, @Req() req) {
+    return this.institutionsService.revokeCertificate(id, req.user.sub);
   }
 }

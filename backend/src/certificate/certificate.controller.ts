@@ -13,11 +13,8 @@ R
   @UseGuards(RolesGuard)
   @Roles(User_Role.Institute)
   @Post('/institute/issue')
-  async issue(
-    @Body() dto: CreateCertificateDto,
-    @Req() req: any,
-  ) {
-    const instituteId = req.user.sub;
-    return this.certificateService.issueCertificate(dto, instituteId);
+  @Post('issue')
+  async issueCertificate(@Body() dto: CreateCertificateDto) {
+    return this.certificateService.createCertificate(dto);
   }
 }

@@ -8,7 +8,9 @@ import { User_Role } from 'src/interfaces/user.interface';
 
 @Controller('users')
 export class UserController {
-  constructor(private userService: UserService) {}
+  constructor(
+    private userService: UserService
+  ) {}
 
   @Get()
   async getUsers() {
@@ -48,7 +50,7 @@ export class UserController {
 
   
 
-  @Post('create-account')
+  @Post()
   @UseGuards(RolesGuard)
   @Roles(User_Role.Admin)
   async createUser(@Body() data: CreateUserDto) {
