@@ -9,14 +9,26 @@ import { institutions } from 'src/db/schema/institution.schema';
 import { eq } from 'drizzle-orm';
 import { CertificateService } from 'src/certificate/certificate.service';
 import { UUID } from 'crypto';
-
+import { DecoderService } from 'src/decoder/decoder.service';
+import { Request } from 'express';
 @Injectable()
 export class InstitutionsService {
   constructor(
     @Inject(DB)
     private readonly db: DrizzleDB,
+    private readonly decoderService: DecoderService,
     private readonly certificatService: CertificateService
   ){}
+
+  async getInfo(req: Request){
+    const user = this.decoderService.decode(req);
+    const institute = await this.db.select().from(institutions).where(eq(institutions.userId, user.userId));
+
+    if(!institute)
+      throw new NotFoundException("Coundn't find an institution with this user id")
+    
+    return institute[0];
+  }
 
   async register(dto: CreateInstitutionDto, userId: number) {
     const institution = await this.db.insert(institutions).values({
