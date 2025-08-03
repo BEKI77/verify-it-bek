@@ -63,8 +63,12 @@ export class InstitutionsService {
     return certificate;
   }
 
-  async getMyCertificates(institutionId: number) {
-    return await this.db.select().from(certificates).where(eq(certificates.institutionId, institutionId));
+  async getMyCertificates(userId: number) {
+    const [ institute ] = await this.db.select().from(institutions).where(eq(institutions.userId,userId)).limit(1)
+
+    const certs = await this.db.select().from(certificates).where(eq(certificates.institutionId, institute.id));
+
+    return certs;
   }
 
   async revokeCertificate(certId: UUID, userId: number) {
