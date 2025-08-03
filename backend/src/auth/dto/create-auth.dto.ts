@@ -10,14 +10,6 @@ export class CreateAuthDto {
   password: string;
 
   @IsString()
-  @IsOptional()
-  fan?: string;
-
-  @IsString()
-  @IsOptional()
-  fin?: string;
-
-  @IsString()
   @IsNotEmpty()
   registrationType: 'fayda' | 'email';
 }

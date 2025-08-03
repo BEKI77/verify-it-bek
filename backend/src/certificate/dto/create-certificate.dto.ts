@@ -9,6 +9,14 @@ export class CreateCertificateDto {
   @IsString()
   @IsNotEmpty()
   fullName: string;
+
+  @IsString()
+  @IsNotEmpty()
+  uni_name: string;
+
+  @IsString()
+  @IsNotEmpty()
+  uni_email: string;
   
   @IsString()
   @IsNotEmpty()

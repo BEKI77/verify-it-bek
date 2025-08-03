@@ -19,6 +19,7 @@ export class AdminController {
   async registerInstitution(@Body() createInstitutionDto: CreateInstitutionDto, @Req() req) {
     const  initialInstituteAccount:CreateUserDto = {
       email: createInstitutionDto.email,
+      imageUrl: '',
       password: `${createInstitutionDto.name}@123`.trim().toUpperCase(),
       registrationType: 'email',
       role:'institution'

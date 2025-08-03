@@ -9,6 +9,8 @@ export const certificates = pgTable('certificates', {
   program: varchar('program', { length: 255 }).notNull(),
   fieldOfStudy: text('field_of_study').notNull(),
   institutionId: integer('institution_id').references(() => institutions.id).notNull(),
+  institutionName: varchar('institution_name', {length: 255}).notNull(),
+  institutionsEmail: varchar('institution_email',{ length: 255}).notNull(),
   issuedAt: timestamp('issued_at', { withTimezone: true }).notNull(),
   expiresAt: timestamp('expires_at', { withTimezone: true }),
   status: statusEum('status').notNull(),

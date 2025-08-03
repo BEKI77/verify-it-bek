@@ -29,19 +29,24 @@ export class UserService {
   }
 
   async findByEmail(email: string) {
-    const [user] = await this.db
+    const user = await this.db
       .select()
       .from(users)
       .where(eq(users.email, email));
-    return user;
+
+    if(!user) return null;
+
+    if(!user[0]?.passwordHash) return user[0];
+    
+    const { passwordHash, ...rest } = user[0];
+
+    return rest;
   }
 
   async createUser(user_data: CreateUserDto) {
 
     const { password } = user_data;
     const hashedPassword = await this.passwordHasher.hash(password);
-
-    
 
     const isFayda = user_data.registrationType === 'fayda';
 
@@ -52,8 +57,6 @@ export class UserService {
         passwordHash: hashedPassword,
         role: user_data.role || 'user',
         registrationType: user_data.registrationType==='email'? 'email':'fayda',
-        fin: isFayda ? user_data.fin : null,
-        fan: isFayda ? user_data.fan : null
       })
       .returning();
 

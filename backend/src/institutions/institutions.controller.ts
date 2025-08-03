@@ -6,6 +6,7 @@ import { Roles } from 'src/roles/roles.decorator';
 import { User_Role } from 'src/interfaces/user.interface';
 import { UserService } from 'src/user/user.service';
 import { UUID } from 'crypto';
+import { DecoderService } from 'src/decoder/decoder.service';
 
 
 @Controller('institutions')
@@ -14,12 +15,14 @@ import { UUID } from 'crypto';
 export class InstitutionsController {
   constructor(
     private readonly institutionsService: InstitutionsService,
+    private readonly decoderService: DecoderService
   ) {}
   
 
   @Post('issue')
   async issue(@Body() dto: CreateCertificateDto, @Req() req) {
-    return await this.institutionsService.issueCertificate(dto, req.user.sub);
+    const user = this.decoderService.decode(req);
+    return await this.institutionsService.issueCertificate(dto, user.userId);
   }
 
   @Get()

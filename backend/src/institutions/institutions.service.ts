@@ -54,7 +54,11 @@ export class InstitutionsService {
     if(institution[0].id !== dto.institutionId)
       throw new UnauthorizedException('Institution not allowed to ')
 
-    const certificate = await this.certificatService.createCertificate(dto);
+    const certificate = await this.certificatService.createCertificate({
+      ...dto, 
+      uni_email:institution[0].email,
+      uni_name: institution[0].name,
+    });
 
     return certificate;
   }

@@ -6,19 +6,15 @@ export class CreateUserDto {
   email: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   password: string;
 
-  // @IsNotEmpty()
+  @IsString()
+  @IsOptional()
+  imageUrl: string;
+
+  @IsNotEmpty()
   role: 'admin' | 'institution' | 'user';
-
-  @IsString()
-  @IsOptional()
-  fan?: string;
-
-  @IsString()
-  @IsOptional()
-  fin?: string;
 
   @IsString()
   @IsNotEmpty()
