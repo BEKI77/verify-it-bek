@@ -29,7 +29,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     password: string
   ): Promise<"student" | "institution" | "verifier" | null> => {
     try {
-      const response = await axios.post("http://localhost:4000/auth/signIn", { email, password });
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/auth/signIn`, { email, password });
 
       const { message, data } = response.data;
 
@@ -48,7 +48,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           email: data.email,
           role: role_frontend,
           name: data.email.split("@")[0],
-          faydaId: data.fin || data.fan || "", // Use fin or fan if available
+          imageUrl: data.imageUrl
         };
         setUser(userData);
 
@@ -74,12 +74,41 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const handleAuthCallback = (userData: User) => {
-    if (userData) {
-      setUser(userData);
-      localStorage.setItem('eduverify_user', JSON.stringify(userData));
+  const handleAuthCallback = (data: any) => {
+    if (data) {
+      const { registerType, role } = data;
+
+        const role_frontend =
+          role === "admin" || role === "institution"
+            ? role
+            : registerType === "email"
+            ? "verifier"
+            : "student";
+
+        const userData: User = {
+          id: data.id.toString(),
+          email: data.email,
+          role: role_frontend,
+          name: data.email.split("@")[0],
+          imageUrl: data.imageUrl
+        };
+        setUser(userData);
+
+        localStorage.setItem("eduverify_user", JSON.stringify(userData));
+        localStorage.setItem("auth_token", data.token);
+      
+        if (
+          role_frontend === "student" ||
+          role_frontend === "institution" ||
+          role_frontend === "verifier"
+        ) {
+          return role_frontend;
+        }
+        return null;
+  
     } else {
       console.error("Invalid user data received during authentication callback");
+      return null;
     }
   };
 
@@ -87,8 +116,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUser(null);
     localStorage.removeItem('eduverify_user');
   };
-
-  
 
   const value = {
     user,

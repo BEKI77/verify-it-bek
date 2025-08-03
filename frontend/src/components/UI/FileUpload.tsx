@@ -10,7 +10,7 @@ interface FileUploadProps {
 
 const FileUpload: React.FC<FileUploadProps> = ({ 
   onFileSelect, 
-  accept = '.pdf', 
+  accept = '.csv', 
   maxSize = 5,
   className = '' 
 }) => {
@@ -100,13 +100,13 @@ const FileUpload: React.FC<FileUploadProps> = ({
         <div className="border border-gray-300 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-800">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <File className="h-8 w-8 text-blue-600" />
+              {/* <File className="h-8 w-8 text-blue-600" />
               <div>
                 <p className="text-sm font-medium text-gray-900 dark:text-white">{selectedFile.name}</p>
                 <p className="text-xs text-gray-500 dark:text-gray-400">
                   {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
                 </p>
-              </div>
+              </div> */}
             </div>
             <button
               onClick={clearFile}

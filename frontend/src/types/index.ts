@@ -2,9 +2,8 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  faydaId: string;
   role: 'student' | 'institution' | 'verifier';
-  avatar?: string;
+  imageUrl?: string;
   schoolName?: string;
   institutionLogo?: string;
   contactInfo?: string;
@@ -27,7 +26,7 @@ export interface Certificate {
 export interface AuthContextType {
   user: User | null;
   login: (email: string, password:string) => Promise<User['role'] | null>;
-  handleAuthCallback: (user:User) => void;
+  handleAuthCallback: (user:any) =>  Promise<User['role'] | null>;
   logout: () => void;
   isAuthenticated: boolean;
 }

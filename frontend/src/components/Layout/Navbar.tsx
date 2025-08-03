@@ -76,9 +76,9 @@ const Navbar: React.FC = () => {
 
                 {/* User info */}
                 <div className="flex items-center space-x-2">
-                  {user.avatar ? (
+                  {user.imageUrl ? (
                     <img
-                      src={user.avatar || '/placeholder.svg'}
+                      src={user.imageUrl || '/placeholder.svg'}
                       alt={user.name}
                       className="h-8 w-8 rounded-full object-cover"
                     />

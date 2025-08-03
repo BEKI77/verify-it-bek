@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Users, FileText, Calendar, TrendingUp } from 'lucide-react';
+import { FileText, Calendar, TrendingUp } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import CertificateCard from '../../components/UI/CertificateCard';
 import Alert from '../../components/UI/Alert';
@@ -14,12 +14,8 @@ const InstitutionDashboard: React.FC = () => {
   const [alertMessage, setAlertMessage] = useState('');
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
-  if(!BACKEND_URL){
-    console
-    throw new Error('There is no backend url');
-  }
-
-
+  if(!BACKEND_URL) throw new Error('There is no backend url');
+  
   useEffect(() => {
 
     const fetchInstitutionData = async () => {
@@ -97,13 +93,13 @@ const InstitutionDashboard: React.FC = () => {
       color: 'text-blue-600 dark:text-blue-400',
       change: '+12%'
     },
-    {
-      label: 'Students Served',
-      value: '1,234',
-      icon: Users,
-      color: 'text-green-600 dark:text-green-400',
-      change: '+8%'
-    },
+    // {
+    //   label: 'Students Served',
+    //   value: '1,234',
+    //   icon: Users,
+    //   color: 'text-green-600 dark:text-green-400',
+    //   change: '+8%'
+    // },
     {
       label: 'This Month',
       value: '45',

@@ -10,7 +10,6 @@ import StudentSettings from './pages/student/StudentSetting';
 import InstitutionDashboard from './pages/institution/InstitutionDashboard';
 import InstitutionUpload from './pages/institution/InstitutionUpload';
 import InstitutionCertificates from './pages/institution/InstitutionCertificates';
-import InstitutionStudents from './pages/institution/InstitutionStudents';
 import InstitutionAnalytics from './pages/institution/institutionAnalytics';
 import VerifierDashboard from './pages/verifier/VerifierDashboard';
 import VerifierVerify from './pages/verifier/VerifierVerify';
@@ -86,7 +85,6 @@ const AppRoutes: React.FC = () => {
                       <Route path="" element={<InstitutionDashboard />} />
                       <Route path="upload" element={<InstitutionUpload />} />
                       <Route path="certificates" element={<InstitutionCertificates />} />
-                      <Route path="students" element={<InstitutionStudents />} />
                       <Route path="analytics" element={<InstitutionAnalytics />} />
                     </Routes>
                   </DashboardLayout>

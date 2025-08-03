@@ -1,94 +1,70 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { SignJWT, importJWK, decodeJwt } from 'jose';
-import { Buffer } from 'buffer';
 import { useAuth } from '../context/AuthContext';
-import { User } from '../types';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const AuthCallbackPage: React.FC = () => {
   const { handleAuthCallback } = useAuth();
-  const navigate = useNavigate();
-  const [userInfo, setUserInfo] = useState<any>(null);
+  const [selectedRole, setSelectedRole] = useState<'student' | 'institution' | 'verifier'>('student');
+  const hasFetched = useRef(false);
   const [statusMessage, setStatusMessage] = useState('Processing authentication...');
+  const navigate = useNavigate();
   const location = useLocation();
 
+
   useEffect(() => {
+    if (hasFetched.current) return; // Prevent double execution
+    hasFetched.current = true;
+
     const fetchTokenAndUserInfo = async (code: string) => {
       try {
         setStatusMessage('Validating authorization code...');
-        const clientId = import.meta.env.VITE_CLIENT_ID;
-        const tokenEndpoint = import.meta.env.VITE_TOKEN_ENDPOINT;
-        const redirectUri = import.meta.env.VITE_REDIRECT_URI;
-        const clientAssertionType = import.meta.env.VITE_CLIENT_ASSERTION_TYPE;
 
-        if (!clientId || !tokenEndpoint || !redirectUri || !clientAssertionType) {
-          console.error("Missing required OIDC environment variables");
-          setStatusMessage('Configuration error. Please contact support.');
-          return;
-        }
+        setStatusMessage('Exchanging authorization code for tokens...'); 
 
-        const codeVerifier = sessionStorage.getItem('pkce_code_verifier');
-
-        if (!codeVerifier) {
-          console.error("Missing PKCE code_verifier in sessionStorage");
-          setStatusMessage('Session error. Please try logging in again.');
-          return;
-        }
-
-        setStatusMessage('Generating signed JWT...');
-        const signedJwt = await generateSignedJwt(clientId, tokenEndpoint);
-
-        setStatusMessage('Exchanging authorization code for tokens...');
-        const response = await axios.post(
-          '/api/v1/esignet/oauth/v2/token',
-          new URLSearchParams({
-            grant_type: 'authorization_code',
-            code: code,
-            redirect_uri: redirectUri,
-            client_id: clientId,
-            client_assertion_type: clientAssertionType,
-            client_secret: signedJwt,
-            code_verifier: codeVerifier
-          }),
-          { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
+        const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/auth/api/token`,
+          { code }
         );
 
         const { access_token } = response.data;
 
         setStatusMessage('Fetching user information...');
-        const userInfoResponse = await axios.get(import.meta.env.VITE_USERINFO_ENDPOINT, {
-          headers: {
-            Authorization: `Bearer ${access_token}`
-          }
+
+        const userInfo = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/auth/api/userinfo/`, {
+          access_token: access_token
         });
 
-        const decoded = decodeJwt(userInfoResponse.data);
+        console.log("Decoded user info:", userInfo.data);
 
-        console.log("Decoded user info:", decoded);
+        const res = await handleAuthCallback(userInfo.data);
 
-        setUserInfo(decoded);
+        if(!res){
+          return null;
+        }
+      
+        setSelectedRole(res);
+        
+        const dashboardRoutes = {
+          student: "/student-dashboard",
+          institution: "/institution-dashboard",
+          verifier: "/verifier-dashboard",
+        };
+      
+        navigate(dashboardRoutes[selectedRole]);
 
-        handleAuthCallback(decoded as any as User);
-
-        toast.info("Login successful");
-        setStatusMessage('Redirecting to dashboard...');
-        navigate('/student-dashboard');
       } catch (error: any) {
-        console.error('OIDC flow failed:', error.response?.data || error.message);
-
-        toast.error('Login failed. Please try again.');
-        setStatusMessage('Authentication failed. Redirecting to login...');
-        navigate('/login');
+          console.error('OIDC flow failed:', error.response?.data || error.message);
+          toast.error('Login failed. Please try again.');
+          setStatusMessage('Authentication failed. Redirecting to login...');
+          navigate('/login');
       }
     };
 
     const queryParams = new URLSearchParams(location.search);
-    // console.log(location.search);
     const code = queryParams.get('code');
-    // console.log(code);
+
     if (code) {
       fetchTokenAndUserInfo(code);
     }
@@ -113,35 +89,6 @@ const spinnerStyle = {
   animation: 'bounce 2s infinite ease-in-out',
   display: 'inline-block',
   margin: '0 5px',
-};
-
-const generateSignedJwt = async (clientId: string, tokenEndpoint: string) => {
-  const now = Math.floor(Date.now() / 1000);
-  const exp = now + 15 * 60; 
-
-  const privateJwkStr = Buffer.from(import.meta.env.VITE_PRIVATE_KEY, 'base64').toString('utf-8');
-  const jwkJson = JSON.parse(privateJwkStr);
-
-  const privateKey = await importJWK(jwkJson, 'RS256');
-
-  console.log(jwkJson.kid);
-
-  const jwt = await new SignJWT({
-    iss: clientId,
-    sub: clientId,
-    aud: tokenEndpoint,
-    iat: now,
-    exp: exp,
-    jti: `${now}`
-  })
-    .setProtectedHeader({
-      alg: 'RS256',
-      // typ: 'JWT',
-      ...(jwkJson.kid && { kid: jwkJson.kid })
-    })
-    .sign(privateKey);
-
-  return jwt;
 };
 
 export default AuthCallbackPage;

@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Shield } from 'lucide-react';
 import Alert from '../components/UI/Alert';
-import { Buffer } from 'buffer';
 
 const LoginPage: React.FC = () => {
   const [selectedRole, setSelectedRole] = useState<'student' | 'institution' | 'verifier'>('student');
@@ -14,64 +13,23 @@ const LoginPage: React.FC = () => {
   const { login } = useAuth();
   const [faydaUrl, setFaydaUrl] = useState<string>('');
 
-
-  function base64URLEncode(buffer: ArrayBuffer): string {
-    return Buffer.from(buffer)
-      .toString("base64")
-      .replace(/\+/g, "-")
-      .replace(/\//g, "_")
-      .replace(/=+$/, "");
-  }
-
-  function generateCodeVerifier(): string {
-    const array = new Uint8Array(32);
-    crypto.getRandomValues(array);
-    return base64URLEncode(array);
-  }
-
-  async function generateCodeChallenge(codeVerifier: string): Promise<string> {
-    const encoder = new TextEncoder();
-    const data = encoder.encode(codeVerifier);
-    const digest = await crypto.subtle.digest("SHA-256", data);
-    return base64URLEncode(digest);
-  }
-
-  const code_Verifier = generateCodeVerifier();
-
   useEffect(() => {
     async function prepareUrl() {
-      sessionStorage.setItem('pkce_code_verifier', code_Verifier);
-
-      const code_challenge  = await generateCodeChallenge(code_Verifier);
-
-      console.log(`code_varifier:  ${code_Verifier}`);
-      console.log(`code_challenge: ${code_challenge}`);
-
-      
 
       const params = new URLSearchParams({
-        client_id: import.meta.env.VITE_CLIENT_ID,
-        response_type: 'code',
-        redirect_uri: import.meta.env.VITE_REDIRECT_URI,
-        scope: 'openid profile email',
-        state: 'ptOO76SD',
-        code_challenge: code_challenge,
-        code_challenge_method: 'S256',
-        acr_values: 'mosip:idp:acr:generated-code',
-        claims_locales: 'en am',
-        claims: JSON.stringify({
-          userinfo: {
-            name: { essential: true },
-            phone: { essential: true },
-            email: { essential: true },
-            picture: { essential: true },
-            gender: { essential: true },
-            birthdate: { essential: true },
-            address: { essential: true }
-          },
-          id_token: {}
-        })
-      });
+          client_id: import.meta.env.VITE_CLIENT_ID,
+          redirect_uri: import.meta.env.VITE_REDIRECT_URI,
+          response_type: "code",
+          scope: "openid profile email",
+          acr_values: "mosip:idp:acr:generated-code mosip:idp:acr:linked-wallet mosip:idp:acr:biometrics",
+          claims: '{"userinfo":{"name":{"essential":true},"phone":{"essential":true},"email":{"essential":true},"picture":{"essential":true},"gender":{"essential":true},"birthdate":{"essential":true},"address":{"essential":true}},"id_token":{}}',
+          code_challenge: "E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM",
+          code_challenge_method: "S256",
+          display: "page",
+          nonce: "g4DEuje5Fx57Vb64dO4oqLHXGT8L8G7g",
+          state: "ptOO76SD",
+          ui_locales: "en",
+    });
       
       setFaydaUrl(`${import.meta.env.VITE_AUTHORIZATION_ENDPOINT}?${params.toString()}`);
     }

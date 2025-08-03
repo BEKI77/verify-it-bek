@@ -40,7 +40,6 @@ const Sidebar: React.FC = () => {
           ...baseItems,
           { icon: Upload, label: 'Upload Certificate', path: '/institution-dashboard/upload' },
           { icon: FileText, label: 'All Certificates', path: '/institution-dashboard/certificates' },
-          { icon: Users, label: 'Students', path: '/institution-dashboard/students' },
           { icon: BarChart3, label: 'Analytics', path: '/institution-dashboard/analytics' }
         ];
       case 'verifier':
