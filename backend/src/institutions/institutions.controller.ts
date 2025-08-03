@@ -29,7 +29,6 @@ export class InstitutionsController {
 
   @Get('/info')
   async getInstituteInfo(@Req() req) {
-    console.log('getInstituteInfo called');
     const result = await this.institutionsService.getInfo(req);
     return {
       success: true,
@@ -40,7 +39,6 @@ export class InstitutionsController {
 
   @Get('/certificates')
   async listCertificates(@Req() req) {
-    console.log('listCertificates called');
     const user = this.decoderService.decode(req);
     const result = await this.institutionsService.getMyCertificates(user.userId);
     return {

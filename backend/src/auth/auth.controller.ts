@@ -36,8 +36,7 @@ export class AuthController {
   @Post('api/token')
   async getToken(@Body() code, @Res() res){
     if (!code) return res.status(400).json({ error: 'Missing code' });
-    console.log(code.code);
-
+    
     try {
       const jwt = await this.authService.generateSignedJwt();
       const client_id = process.env.CLIENT_ID;
@@ -89,10 +88,12 @@ export class AuthController {
           headers: { Authorization: `Bearer ${access_token}` }
         });
         
+        
         const userData = await this.authService.decodeUserInfoResponse(response.data);
-        const { email,picture } = userData as any;
+        const { email, picture } = userData as any;
         const check_user = await this.userService.findByEmail(email);
-
+        
+        // console.log(check_user);
         
         if(check_user){
           const token = jwt.sign(
@@ -104,10 +105,11 @@ export class AuthController {
             process.env.JWT_SECRET, 
             { expiresIn: '1h' }
           );
-          return { 
+          
+          return res.json({ 
             message: 'Log-in successful',
             data: {... check_user, token } 
-          };
+          });
         }
 
           
@@ -129,10 +131,10 @@ export class AuthController {
           { expiresIn: '1h' }
           );
         
-        return { 
+        return res.json({ 
             message: 'Log-in successful',
             data: {... new_user, token } 
-        };
+        });
       } catch (err) {
           console.error(err.response?.data || err.message);
           res.status(500).json({ error: 'Userinfo request failed' });
