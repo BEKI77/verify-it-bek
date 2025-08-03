@@ -8,6 +8,16 @@ services:
       - '4001:4000'
     environment:
       DATABASE_URL: ".env value for the databae url"
+      TOKEN_ENDPOINT: "https://esignet.ida.fayda.et/v1/esignet/oauth/v2/token"
+      REDIRECT_URI: "http://localhost:3000/callback"
+      USERINFO_ENDPOINT: "https://esignet.ida.fayda.et/v1/esignet/oidc/userinfo"
+      CLIENT_ASSERTION_TYPE: "urn:ietf:params:oauth:client-assertion-type:jwt-bearer"
+      PRIVATE_KEY: "your private key"
+      JWT_SECRET: "your JWT_SECRET"
+      PORT: 4000
+      DEPLOYED_URL: "the url for the deployed image"
+      SUPABASE_URL: "https://hlzclxzzapywduzzwvfp.supabase.co"
+      SUPABASE_KEY: "your supabase key"
 
   frontend:
     build:
