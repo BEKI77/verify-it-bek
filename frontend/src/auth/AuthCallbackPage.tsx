@@ -32,13 +32,13 @@ const AuthCallbackPage: React.FC = () => {
 
         setStatusMessage('Fetching user information...');
 
-        const userInfo = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/auth/api/userinfo/`, {
-          access_token: access_token
-        });
+        const userInfo = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/auth/api/userinfo`,
+          { access_token }
+        );
 
-        console.log("Decoded user info:", userInfo.data);
+        console.log("Decoded user info:", userInfo.data.data);
 
-        const res = await handleAuthCallback(userInfo.data);
+        const res = await handleAuthCallback(userInfo.data.data);
 
         if(!res){
           return null;

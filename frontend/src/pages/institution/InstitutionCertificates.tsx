@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Filter, Eye, FileText } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
 import axios from 'axios';
 
 interface Certificate {
@@ -21,7 +20,6 @@ interface Certificate {
 }
 
 const InstitutionCertificates: React.FC = () => {
-  const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState<'all' | 'valid' | 'revoked'>('all');
   const [allCertificates, setAllCertificates] = useState<Certificate[]>([]);

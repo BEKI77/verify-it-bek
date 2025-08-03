@@ -23,13 +23,15 @@ const InstitutionDashboard: React.FC = () => {
         try {
           const token = localStorage.getItem('auth_token');
 
-          const response = await axios.get(`${BACKEND_URL}/institutions`,{
+          const response = await axios.get(`${BACKEND_URL}/institutions/info`,{
             headers: {
               Authorization: `Bearer ${token}`,
             }
           });   
+          
           setInstitution(response.data);
           console.log(response);
+
         } catch (error) {
             console.error('Error fetching institution data:', error);
             setAlertMessage('Failed to fetch institution data.');
