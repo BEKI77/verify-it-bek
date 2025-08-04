@@ -10,12 +10,7 @@ export class VerificationService {
     private readonly db: DrizzleDB,
   ){}
   async verifyCertificateById(certificateId: string) {
-    const cert = await this.db.query.certificates.findFirst({
-      where: eq(certificates.certificateId, certificateId),
-      with: {
-        institution: true,
-      },
-    });
+    const [cert] = await this.db.select().from(certificates).where(eq(certificates.certificateId, certificateId));
 
     if (!cert) {
       throw new NotFoundException('Certificate not found');

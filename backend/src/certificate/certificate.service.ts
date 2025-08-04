@@ -59,9 +59,8 @@ export class CertificateService {
 
   private async generateCertificatePdf(cert: any): Promise<string> {
     const bufferChunks: any[] = [];
-    const verifyLink = `${process.env.DEPLOYED_URL}/verify?certificateId=${cert.certificateId}`;
 
-    const qrCodeDataURL = await QRCode.toDataURL(verifyLink);
+    const qrCodeDataURL = await QRCode.toDataURL(cert.certificateId);
 
 
     const doc = new PDFDocument();
