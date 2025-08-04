@@ -29,7 +29,7 @@ const InstitutionDashboard: React.FC = () => {
             }
           });   
           
-          setInstitution(response.data);
+          setInstitution(response.data.data);
           console.log(response);
 
         } catch (error) {
@@ -54,7 +54,6 @@ const InstitutionDashboard: React.FC = () => {
       issueDate: '2024-03-15',
       verificationCode: 'EDU-VER-2024-1234',
       status: 'verified',
-      notes: 'Final examination results'
     },
     {
       id: '2',
@@ -65,7 +64,6 @@ const InstitutionDashboard: React.FC = () => {
       issueDate: '2024-03-14',
       verificationCode: 'EDU-VER-2024-5678',
       status: 'verified',
-      notes: 'Good moral character'
     },
     {
       id: '3',
@@ -76,7 +74,6 @@ const InstitutionDashboard: React.FC = () => {
       issueDate: '2024-03-13',
       verificationCode: 'EDU-VER-2024-9012',
       status: 'pending',
-      notes: 'Transfer request - awaiting verification'
     }
   ];
 

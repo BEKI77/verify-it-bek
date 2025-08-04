@@ -19,6 +19,7 @@ import NotFoundPage from './pages/NotFoundPage';
 import AuthCallbackPage from './auth/AuthCallbackPage';
 import DashboardLayout from './layouts/DashboardLayout';
 import { InstitutionProvider } from './context/InstitutionContext';
+import { VerificationProvider } from './context/VerificationContext';
 
 const ProtectedRoute: React.FC<{ 
   children: React.ReactNode; 
@@ -96,6 +97,7 @@ const AppRoutes: React.FC = () => {
             path="/verifier-dashboard/*" 
             element={
               <ProtectedRoute allowedRoles={['verifier']}>
+                <VerificationProvider>
                 <DashboardLayout>
                   <Routes>
                     <Route path="" element={<VerifierDashboard />} />
@@ -104,6 +106,8 @@ const AppRoutes: React.FC = () => {
                     <Route path="reports" element={<VerifierReports />} />
                   </Routes>
                 </DashboardLayout>
+
+                </VerificationProvider>
               </ProtectedRoute>
             } 
           />

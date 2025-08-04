@@ -19,7 +19,6 @@ export interface Certificate {
   verificationCode: string;
   status: 'pending' | 'verified' | 'rejected';
   pdfUrl?: string;
-  notes?: string;
   qrCode?: string;
 }
 

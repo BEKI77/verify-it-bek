@@ -1,6 +1,6 @@
 import type React from "react"
 import { useState } from "react"
-import { User, Calendar, Save, Plus } from "lucide-react"
+import { User, Calendar, Save } from "lucide-react"
 import axios from "axios"
 import { useAuth } from "../../context/AuthContext"
 import FileUpload from "../../components/UI/FileUpload"
@@ -22,8 +22,6 @@ const InstitutionUpload: React.FC = () => {
   });
 
   const token = localStorage.getItem('auth_token');
-
-  console.log(token);
 
   const degreeTypes = [
     "Bachelor of Science",
@@ -63,10 +61,8 @@ const InstitutionUpload: React.FC = () => {
   ]
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
-    setFormData({
-      ...formData,
-      [name]: value,
+    const { name, value } = e.target;
+    setFormData({...formData,[name]: value,
     })
   }
 
@@ -93,7 +89,6 @@ const InstitutionUpload: React.FC = () => {
     setIsLoading(true);
 
     try {
-        // If the selected file is not a CSV, send the form data
         if (!institution || !institution.id) {
           showAlertMessage("Institution information is missing. Please try again later.", "error");
           setIsLoading(false);
