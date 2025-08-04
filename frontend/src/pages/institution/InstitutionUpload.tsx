@@ -1,15 +1,15 @@
-import type React from "react"
-import { useState } from "react"
-import { User, Calendar, Save } from "lucide-react"
-import axios from "axios"
-import { useAuth } from "../../context/AuthContext"
+import type React from "react";
+import { useState } from "react";
+import { User, Calendar, Save } from "lucide-react";
+import axios from "axios";
 import FileUpload from "../../components/UI/FileUpload"
 import Alert from "../../components/UI/Alert"
 import { useInstitution } from "../../context/InstitutionContext"
 
 const InstitutionUpload: React.FC = () => {
-  const { user } = useAuth();
-  const { institution, setInstitution } = useInstitution();
+  const [selectedFile, setSelectedFile ] = useState<File | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const { institution } = useInstitution();
   const [showAlert, setShowAlert] = useState(false)
   const [alertMessage, setAlertMessage] = useState("")
   const [alertType, setAlertType] = useState<"success" | "error">("success")
@@ -19,6 +19,7 @@ const InstitutionUpload: React.FC = () => {
     degree: "",
     fieldOfStudy: "",
     issuedAt: "",
+    cgpa: 0
   });
 
   const token = localStorage.getItem('auth_token');
@@ -62,13 +63,14 @@ const InstitutionUpload: React.FC = () => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
+    console.log(name,value);
     setFormData({...formData,[name]: value,
     })
   }
 
-  // const handleFileSelect = (file: File) => {
-  //   setSelectedFile(file)
-  // }
+  const handleFileSelect = (file: File) => {
+    setSelectedFile(file)
+  }
 
   const showAlertMessage = (message: string, type: "success" | "error" = "success") => {
     setAlertMessage(message)
@@ -78,71 +80,123 @@ const InstitutionUpload: React.FC = () => {
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  e.preventDefault();
 
+  if (!token) {
+    showAlertMessage("Authentication token not found. Please login again.", "error");
+    return;
+  }
+
+  // Validation for issuedAt
+  if (!formData.issuedAt || isNaN(new Date(formData.issuedAt).getTime())) {
+    showAlertMessage("Please provide a valid issue date.", "error");
+    return;
+  }
+
+  // Validation for CGPA
+  if (formData.cgpa === null || formData.cgpa === undefined || formData.cgpa === 0) {
+    showAlertMessage("CGPA cannot be empty.", "error");
+    return;
+  }
+
+  if (isNaN(Number(formData.cgpa)) ) {
+    showAlertMessage("CGPA must be a number between 0 and 10.", "error");
+    return;
+  }
+
+  setIsLoading(true);
+
+  try {
+    if (!institution || !institution.id) {
+      showAlertMessage("Institution information is missing. Please try again later.", "error");
+      setIsLoading(false);
+      return;
+    }
+
+    const certificateData = {
+      fullName: formData.fullName,
+      degree: formData.degree,
+      fieldOfStudy: formData.fieldOfStudy,
+      issuedAt: new Date(formData.issuedAt).toISOString(),
+      cgpa: Number(formData.cgpa),
+      institutionId: institution.id,
+    };
+
+    const response = await axios.post(
+      `${import.meta.env.VITE_BACKEND_URL}/institutions/issue`,
+      certificateData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    console.log(response);
+    showAlertMessage(
+      `Certificate for ${formData.fullName} issued successfully! Certificate ID: ${response.data.data.certificateId || "Generated"}`,
+      "success"
+    );
+
+    // Reset form
+    setFormData({
+      fullName: "",
+      degree: "",
+      fieldOfStudy: "",
+      issuedAt: "",
+      cgpa: 0,
+    });
+  } catch (error: any) {
+    console.error("Error uploading file:", error);
+
+    const errorMessage =
+      error.response?.data?.message || error.response?.data?.error || "Failed to upload file. Please try again.";
+
+    showAlertMessage(errorMessage, "error");
+  } finally {
+    setIsLoading(false);
+  }
+};
+
+  const handleBulkUpload = async () => {
+    if (!selectedFile) {
+      showAlertMessage("Please select a file to upload.", "error");
+      return;
+    }
 
     if (!token) {
       showAlertMessage("Authentication token not found. Please login again.", "error");
       return;
     }
 
-    setIsLoading(true);
+    const formData = new FormData();
+    formData.append("file", selectedFile);
+
+    setIsUploading(true);
 
     try {
-        if (!institution || !institution.id) {
-          showAlertMessage("Institution information is missing. Please try again later.", "error");
-          setIsLoading(false);
-          return;
+      const response = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/institutions/upload`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
         }
+      );
 
-        const certificateData = {
-          fullName: formData.fullName,
-          degree: formData.degree,
-          fieldOfStudy: formData.fieldOfStudy,
-          issuedAt: new Date(formData.issuedAt).toISOString(),
-          institutionId: institution.id,
-        };
+      console.log(response);
 
-        console.log(certificateData);
-        const response = await axios.post(
-          `${import.meta.env.VITE_BACKEND_URL}/institutions/issue`,
-          certificateData,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`
-            },
-            
-          }
-        );
-
-        showAlertMessage(
-          `Certificate for ${formData.fullName} issued successfully! Certificate ID: ${response.data.id || "Generated"}`,
-          "success"
-        );
-
-        // Reset form
-        setFormData({
-          fullName: "",
-          degree: "",
-          fieldOfStudy: "",
-          issuedAt: "",
-        });
-
+      showAlertMessage(response.data.message || "Bulk upload successful!", "success");
+      setSelectedFile(null); // Reset file input
     } catch (error: any) {
-      console.error("Error uploading file:", error);
-
+      console.error("Error during bulk upload:", error);
       const errorMessage =
         error.response?.data?.message || error.response?.data?.error || "Failed to upload file. Please try again.";
-
       showAlertMessage(errorMessage, "error");
     } finally {
-      setIsLoading(false);
+      setIsUploading(false);
     }
-  };
-  const handleBulkUpload = () => {
-    showAlertMessage(
-      "Bulk upload feature will be available soon. You can upload multiple certificates using CSV template.",
-    )
   }
 
   return (
@@ -233,6 +287,23 @@ const InstitutionUpload: React.FC = () => {
                   </div>
 
                   <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    CGPA *
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="number"
+                      name="cgpa"
+                      value={formData.cgpa}
+                      onChange={handleInputChange}
+                      required
+                      className="w-full pl-4 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="Enter CGPA (e.g., 3.5)"
+                    />
+                  </div>
+                </div>
+
+                  <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       Issue Date *
                     </label>
@@ -265,12 +336,19 @@ const InstitutionUpload: React.FC = () => {
             <div className="space-y-6">
               <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Certificate File</h3>
-                <FileUpload onFileSelect={handleBulkUpload} />
-                {/* {selectedFile && (
+                <FileUpload onFileSelect={handleFileSelect} />
+                {selectedFile && (
                   <div className="mt-4 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
                     <p className="text-sm text-green-800 dark:text-green-200">✓ File selected: {selectedFile.name}</p>
                   </div>
-                )} */}
+                )}
+                <button
+                 onClick={handleBulkUpload}
+                 disabled={isUploading}
+                 className="mt-4 w-full flex items-center justify-center space-x-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white px-6 py-3 rounded-lg transition-colors"
+                >
+                  {isUploading ? "Uploading..." : "Upload File"}
+                </button>
               </div>
 
               <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
