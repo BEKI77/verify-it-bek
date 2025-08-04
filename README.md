@@ -36,7 +36,7 @@ For detailed documentation, visit [EduVerify Documentation](https://docs.google.
 
 - Frontend: React.js + Tailwind
 - Backend: Nest.js
-- Database: PostgreSQL
+- Database: Supabase
 - Auth: VeriFayda OIDC (OpenID Connect)
 - File Storage: Firebase / AWS S3
 - Deployment: Vercel (frontend), Railway/Render (backend)
@@ -82,4 +82,4 @@ docker-compose up --build -d
 
 ## License
 
-The unlicensed
+The Unlicensed
