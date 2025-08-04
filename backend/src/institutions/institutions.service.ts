@@ -1,7 +1,5 @@
-import { Inject, Injectable, ForbiddenException, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { Inject, Injectable, ForbiddenException, NotFoundException} from '@nestjs/common';
 import { CreateInstitutionDto } from './dto/create-institution.dto';
-import { CreateCertificateDto } from 'src/certificate/dto/create-certificate.dto';
-import { UpdateInstitutionDto } from './dto/update-institution.dto';
 import { DB } from 'src/db/db.module';
 import { DrizzleDB } from 'src/db/types/db';
 import { certificates } from 'src/db/schema/certificate.schema';
@@ -11,6 +9,7 @@ import { CertificateService } from 'src/certificate/certificate.service';
 import { UUID } from 'crypto';
 import { DecoderService } from 'src/decoder/decoder.service';
 import { Request } from 'express';
+import { CertificateDataDto } from './dto/certificate-data.dto';
 @Injectable()
 export class InstitutionsService {
   constructor(
@@ -40,31 +39,52 @@ export class InstitutionsService {
     return institution[0];
   }
 
-  async issueCertificate(dto: CreateCertificateDto, userId: number) {
+  async issueCertificate(dto: CertificateDataDto, userId: number) {
 
-    const institution = await this.db.select()
+    const [ institution ] = await this.db.select()
     .from(institutions)
-    .where(eq(institutions.userId, userId))
-    .limit(1);
+    .where(eq(institutions.userId, userId));
      
 
-    if (!institution || !institution[0].approved)
+    if (!institution || !institution.approved)
       throw new ForbiddenException('Institution not found or not approved');
-
-    if(institution[0].id !== dto.institutionId)
-      throw new UnauthorizedException('Institution not allowed to ')
 
     const certificate = await this.certificatService.createCertificate({
       ...dto, 
-      uni_email:institution[0].email,
-      uni_name: institution[0].name,
+      institutionId: institution.id,
+      uni_email:institution.email,
+      uni_name: institution.name,
     });
 
     return certificate;
   }
 
+  async issueCertificateBulk( dto: CertificateDataDto[], userId: number){
+
+    const [ institution ] = await this.db.select()
+    .from(institutions)
+    .where(eq(institutions.userId, userId));
+
+    if (!institution || !institution.approved)
+      throw new ForbiddenException('Institution not found or not approved');
+
+    const certificatePromises = dto.map((data) => {
+      this.certificatService.createCertificate({
+        ...data,
+        institutionId: institution.id,
+        uni_email: institution.email,
+        uni_name: institution.name
+      });
+    })
+    
+    const certificates = await Promise.all(certificatePromises);
+
+    return certificates;
+
+  }
+
   async getMyCertificates(userId: number) {
-    const [ institute ] = await this.db.select().from(institutions).where(eq(institutions.userId,userId)).limit(1)
+    const [ institute ] = await this.db.select().from(institutions).where(eq(institutions.userId,userId)).limit(1);
 
     const certs = await this.db.select().from(certificates).where(eq(certificates.institutionId, institute.id));
 
