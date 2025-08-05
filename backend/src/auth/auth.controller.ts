@@ -5,6 +5,8 @@ import axios from 'axios';
 import { Request } from 'express';
 import { UserService } from 'src/user/user.service';
 import * as jwt from 'jsonwebtoken';
+import { createClient } from '@supabase/supabase-js';
+import { date } from 'drizzle-orm/mysql-core';
 
 @Controller('auth')
 export class AuthController {
@@ -77,7 +79,7 @@ export class AuthController {
 
     @Post('api/userinfo')
     async getUserInfo(@Req() req: Request, @Res() res) {
-      const { access_token } = req.body;
+      const { access_token, role } = req.body;
       const userinfo_endpoint = process.env.USERINFO_ENDPOINT;
 
       if (!access_token) return res.status(400).json({ error: 'Missing access token' });
@@ -93,7 +95,6 @@ export class AuthController {
         const { email, picture } = userData as any;
         const check_user = await this.userService.findByEmail(email);
         
-        // console.log(check_user);
         
         if(check_user){
           const token = jwt.sign(
@@ -111,13 +112,32 @@ export class AuthController {
             data: {... check_user, token } 
           });
         }
+        
+        const base64Data = picture.split(';base64').pop();
+        const buffer = Buffer.from(base64Data, 'base64');
+        const fileName = `${email}-${Date.now()}.png`;
+        
+        const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_KEY!);
 
-          
+        const { data: uploadData, error: uploadError } = await supabase.storage.from('profileimage')
+        .upload(fileName, buffer, {
+          contentType: 'image/png'
+        });
+
+        if(uploadError){
+          console.error('Error uploading image to Supabase:', uploadError.message);
+          return res.status(500).json({ error: 'Image upload failed' });
+        }
+
+        const { data: publicUrlData } = supabase.storage
+        .from('profileimage')
+        .getPublicUrl(fileName);
+
         const new_user = await this.userService.createUser({
           email:email, 
           password: '',
-          imageUrl: picture,
-          role: 'user',
+          imageUrl: publicUrlData.publicUrl,
+          role,
           registrationType: 'fayda',
         });
         

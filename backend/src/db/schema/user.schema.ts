@@ -1,6 +1,6 @@
 import { pgTable, serial, text, varchar, timestamp, pgEnum } from 'drizzle-orm/pg-core';
 
-export const userRoleEnum = pgEnum('role', ['admin', 'institution', 'user']);
+export const userRoleEnum = pgEnum('role', ['admin', 'institution', 'verifier', 'student']);
 export const registrationTypeEnum = pgEnum('registration_type', ['fayda', 'email']);
 
 export const users = pgTable('users', {

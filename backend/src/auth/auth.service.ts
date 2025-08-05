@@ -27,7 +27,7 @@ export class AuthService {
       throw new HttpException('User already exists', HttpStatus.BAD_REQUEST);
     }
 
-    const newUser = await this.userService.createUser({ ...createAuthDto, role: 'user', imageUrl: '' });
+    const newUser = await this.userService.createUser({ ...createAuthDto, imageUrl: '' });
 
     const token = jwt.sign(
       { userId: newUser.id, new: newUser.email, role: newUser.role },

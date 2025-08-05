@@ -10,6 +10,9 @@ export class CreateAuthDto {
   password: string;
 
   @IsString()
+  role: 'student'|'verifier';
+
+  @IsString()
   @IsNotEmpty()
   registrationType: 'fayda' | 'email';
 }

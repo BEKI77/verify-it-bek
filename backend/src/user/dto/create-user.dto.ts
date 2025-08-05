@@ -14,7 +14,7 @@ export class CreateUserDto {
   imageUrl: string;
 
   @IsNotEmpty()
-  role: 'admin' | 'institution' | 'user';
+  role: 'admin' | 'institution' | 'verifier' | 'student';
 
   @IsString()
   @IsNotEmpty()

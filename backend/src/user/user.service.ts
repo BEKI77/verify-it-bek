@@ -53,9 +53,10 @@ export class UserService {
     const  [ user ]  = await this.db
       .insert(users)
       .values({
+        imageUrl:user_data.imageUrl,
         email: user_data.email,
         passwordHash: hashedPassword,
-        role: user_data.role || 'user',
+        role: user_data.role,
         registrationType: user_data.registrationType==='email'? 'email':'fayda',
       })
       .returning();
