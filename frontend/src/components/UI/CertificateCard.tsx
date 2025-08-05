@@ -35,10 +35,10 @@ const CertificateCard: React.FC<CertificateCardProps> = ({
       <div className="flex justify-between items-start mb-4">
         <div>
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
-            {certificate.certificateType}
+            {certificate.fieldOfStudy}
           </h3>
           <p className="text-sm text-gray-600 dark:text-gray-400">
-            Student: {certificate.studentName}
+            Student: {certificate.fullName}
           </p>
           <p className="text-sm text-gray-600 dark:text-gray-400">
             Institution: {certificate.institutionName}
@@ -51,12 +51,12 @@ const CertificateCard: React.FC<CertificateCardProps> = ({
 
       <div className="flex items-center text-sm text-gray-500 dark:text-gray-400 mb-4">
         <Calendar className="h-4 w-4 mr-2" />
-        <span>Issued: {new Date(certificate.issueDate).toLocaleDateString()}</span>
+        <span>Issued: {new Date(certificate.issuedAt).toLocaleDateString()}</span>
       </div>
 
       <div className="bg-gray-50 dark:bg-gray-700 rounded-md p-3 mb-4">
         <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">Verification Code</p>
-        <p className="text-sm font-mono text-gray-900 dark:text-white">{certificate.verificationCode}</p>
+        <p className="text-sm font-mono text-gray-900 dark:text-white">{certificate.certificateId}</p>
       </div>
 
       {showActions && (

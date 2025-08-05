@@ -9,17 +9,22 @@ export interface User {
   contactInfo?: string;
 }
 
+
 export interface Certificate {
-  id: string;
-  studentName: string;
-  studentId: string;
+  certificateId: string;
+  fullName: string;
+  program: string;
+  fieldOfStudy: string;
+  institutionId: number;
   institutionName: string;
-  certificateType: string;
-  issueDate: string;
-  verificationCode: string;
-  status: 'pending' | 'verified' | 'rejected';
-  pdfUrl?: string;
-  qrCode?: string;
+  institutionsEmail: string;
+  issuedAt: string;
+  expiresAt: string | null;
+  status: string;
+  fileUrl: string | null;
+  verified: boolean;
+  hash: string;
+  createdAt: string;
 }
 
 export interface AuthContextType {

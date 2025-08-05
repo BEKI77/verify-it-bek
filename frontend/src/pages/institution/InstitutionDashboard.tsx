@@ -12,6 +12,10 @@ const InstitutionDashboard: React.FC = () => {
   const { institution, setInstitution } = useInstitution();
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
+  const [certificates, setCertificates] = useState<Certificate[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
   if(!BACKEND_URL) throw new Error('There is no backend url');
@@ -30,7 +34,6 @@ const InstitutionDashboard: React.FC = () => {
           });   
           
           setInstitution(response.data.data);
-          console.log(response);
 
         } catch (error) {
             console.error('Error fetching institution data:', error);
@@ -44,40 +47,34 @@ const InstitutionDashboard: React.FC = () => {
     fetchInstitutionData();
   }, [user?.id, setInstitution]);
 
-  const certificates: Certificate[] = [
-    {
-      id: '1',
-      studentName: 'John Doe',
-      studentId: 'STU001',
-      institutionName: 'Delhi Public School',
-      certificateType: 'Class 12 Marksheet',
-      issueDate: '2024-03-15',
-      verificationCode: 'EDU-VER-2024-1234',
-      status: 'verified',
-    },
-    {
-      id: '2',
-      studentName: 'Jane Smith',
-      studentId: 'STU002',
-      institutionName: 'Delhi Public School',
-      certificateType: 'Character Certificate',
-      issueDate: '2024-03-14',
-      verificationCode: 'EDU-VER-2024-5678',
-      status: 'verified',
-    },
-    {
-      id: '3',
-      studentName: 'Mike Johnson',
-      studentId: 'STU003',
-      institutionName: 'Delhi Public School',
-      certificateType: 'Transfer Certificate',
-      issueDate: '2024-03-13',
-      verificationCode: 'EDU-VER-2024-9012',
-      status: 'pending',
-    }
-  ];
 
+   useEffect(() => {
+    const fetchCertificates = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const token = localStorage.getItem('auth_token');
 
+        const response = await axios.get(`${BACKEND_URL}/institutions/certificates`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        console.log(response.data.data );
+
+        setCertificates(response.data.data || []);
+      } catch (err: any) {
+        setError(err.response?.data?.message || 'Failed to fetch certificates');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCertificates();
+  }, []);
+
+ 
   const handleView = (certificate: Certificate) => {
     setAlertMessage('This is a demo feature. In a real application, this would open the certificate.');
     setShowAlert(true);
@@ -92,13 +89,6 @@ const InstitutionDashboard: React.FC = () => {
       color: 'text-blue-600 dark:text-blue-400',
       change: '+12%'
     },
-    // {
-    //   label: 'Students Served',
-    //   value: '1,234',
-    //   icon: Users,
-    //   color: 'text-green-600 dark:text-green-400',
-    //   change: '+8%'
-    // },
     {
       label: 'This Month',
       value: '45',
@@ -181,16 +171,22 @@ const InstitutionDashboard: React.FC = () => {
           {/* Recent Certificates */}
           <div className="mb-8">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Recent Certificates</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {certificates.map((certificate) => (
-                <CertificateCard
-                  key={certificate.id}
-                  certificate={certificate}
-                  onView={() => handleView(certificate)}
-                  showActions={true}
-                />
-              ))}
-            </div>
+              {loading ? (
+              <p className="text-gray-600 dark:text-gray-400">Loading certificates...</p>
+            ) : error ? (
+              <p className="text-red-600 dark:text-red-400">{error}</p>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {certificates.map((certificate) => (
+                  <CertificateCard
+                    key={certificate.certificateId}
+                    certificate={certificate}
+                    onView={() => handleView(certificate)}
+                    showActions={true}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>

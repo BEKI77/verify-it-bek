@@ -1,9 +1,7 @@
 import React from 'react';
-import { TrendingUp, Users, FileText, Calendar, Award, BarChart3, PieChart, Activity } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
+import { TrendingUp, Users, FileText, Award, BarChart3, PieChart, Activity } from 'lucide-react';
 
 const InstitutionAnalytics: React.FC = () => {
-  const { user } = useAuth();
 
   const stats = [
     {
@@ -107,7 +105,7 @@ const InstitutionAnalytics: React.FC = () => {
               </div>
               <div className="space-y-4">
                 {monthlyData.map((data, index) => (
-                  <div key={data.month} className="flex items-center justify-between">
+                  <div key={index} className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
                       <div className="w-12 text-sm font-medium text-gray-600 dark:text-gray-400">
                         {data.month}
@@ -194,19 +192,11 @@ const InstitutionAnalytics: React.FC = () => {
                 <div className="space-y-3">
                   <div className="flex justify-between">
                     <span className="text-sm text-gray-600 dark:text-gray-400">Certificates Issued</span>
-                    <span className="text-sm font-medium text-gray-900 dark:text-white">95</span>
+                    <span className="text-sm font-medium text-gray-900 dark:text-white">10</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-sm text-gray-600 dark:text-gray-400">New Students</span>
-                    <span className="text-sm font-medium text-gray-900 dark:text-white">35</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm text-gray-600 dark:text-gray-400">Verifications</span>
-                    <span className="text-sm font-medium text-gray-900 dark:text-white">127</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm text-gray-600 dark:text-gray-400">Success Rate</span>
-                    <span className="text-sm font-medium text-green-600 dark:text-green-400">98.5%</span>
+                    <span className="text-sm font-medium text-gray-900 dark:text-white">20</span>
                   </div>
                 </div>
               </div>

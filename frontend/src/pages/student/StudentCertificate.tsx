@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { Download, Share2, Search, Filter, Calendar, Award, FileText } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
+import { Search, Filter, Calendar, Award, FileText } from 'lucide-react';
 import Sidebar from '../../components/Layout/Sidebar';
 import CertificateCard from '../../components/UI/CertificateCard';
 import QRCodeViewer from '../../components/UI/QRCodeViewer';
@@ -9,7 +8,6 @@ import Alert from '../../components/UI/Alert';
 import { Certificate } from '../../types';
 
 const StudentCertificates: React.FC = () => {
-  const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState<'all' | 'verified' | 'pending' | 'rejected'>('all');
   const [showQRModal, setShowQRModal] = useState(false);
@@ -17,84 +15,93 @@ const StudentCertificates: React.FC = () => {
   const [showAlert, setShowAlert] = useState(false);
 
   // Mock certificates data
-  const allCertificates: Certificate[] = [
-    {
-      id: '1',
-      studentName: 'John Doe',
-      studentId: 'STU001',
-      institutionName: 'Delhi Public School',
-      certificateType: 'Class 12 Marksheet',
-      issueDate: '2024-03-15',
-      verificationCode: 'EDU-VER-2024-1234',
-      status: 'verified',
-      pdfUrl: '#',
-      notes: 'Final examination results - Mathematics: A+, Physics: A, Chemistry: A'
-    },
-    {
-      id: '2',
-      studentName: 'John Doe',
-      studentId: 'STU001',
-      institutionName: 'Delhi Public School',
-      certificateType: 'Character Certificate',
-      issueDate: '2024-03-20',
-      verificationCode: 'EDU-VER-2024-5678',
-      status: 'verified',
-      pdfUrl: '#',
-      notes: 'Good moral character certificate for college admission'
-    },
-    {
-      id: '3',
-      studentName: 'John Doe',
-      studentId: 'STU001',
-      institutionName: 'Delhi Public School',
-      certificateType: 'Transfer Certificate',
-      issueDate: '2024-03-25',
-      verificationCode: 'EDU-VER-2024-9012',
-      status: 'pending',
-      pdfUrl: '#',
-      notes: 'Transfer certificate - pending verification from registrar'
-    },
-    {
-      id: '4',
-      studentName: 'John Doe',
-      studentId: 'STU001',
-      institutionName: 'Delhi Public School',
-      certificateType: 'Class 10 Marksheet',
-      issueDate: '2022-05-10',
-      verificationCode: 'EDU-VER-2022-3456',
-      status: 'verified',
-      pdfUrl: '#',
-      notes: 'Secondary school completion certificate'
-    },
-    {
-      id: '5',
-      studentName: 'John Doe',
-      studentId: 'STU001',
-      institutionName: 'Delhi Public School',
-      certificateType: 'Sports Certificate',
-      issueDate: '2023-12-15',
-      verificationCode: 'EDU-VER-2023-7890',
-      status: 'verified',
-      pdfUrl: '#',
-      notes: 'Inter-school basketball championship - First place'
-    },
-    {
-      id: '6',
-      studentName: 'John Doe',
-      studentId: 'STU001',
-      institutionName: 'Delhi Public School',
-      certificateType: 'Migration Certificate',
-      issueDate: '2024-04-01',
-      verificationCode: 'EDU-VER-2024-1111',
-      status: 'rejected',
-      pdfUrl: '#',
-      notes: 'Migration certificate - rejected due to incomplete documentation'
-    }
-  ];
 
-  const filteredCertificates = allCertificates.filter(cert => {
-    const matchesSearch = cert.certificateType.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         cert.verificationCode.toLowerCase().includes(searchQuery.toLowerCase());
+  const allCertificates: Certificate[] = [
+  {
+    certificateId: 'CERT12345',
+    fullName: 'Alice Johnson',
+    program: 'BSc Computer Science',
+    fieldOfStudy: 'Computer Science',
+    institutionId: 1,
+    institutionName: 'Tech University',
+    institutionsEmail: 'info@techuniversity.edu',
+    issuedAt: '2025-01-15',
+    expiresAt: null,
+    status: 'verified',
+    fileUrl: 'https://eduverify.app/certificates/CERT12345.pdf',
+    verified: true,
+    hash: 'abc123hashvalue',
+    createdAt: '2025-01-01',
+  },
+  {
+    certificateId: 'CERT67890',
+    fullName: 'Bob Smith',
+    program: 'BEng Mechanical Engineering',
+    fieldOfStudy: 'Mechanical Engineering',
+    institutionId: 2,
+    institutionName: 'Engineering Institute',
+    institutionsEmail: 'contact@engineeringinstitute.edu',
+    issuedAt: '2025-03-20',
+    expiresAt: null,
+    status: 'pending',
+    fileUrl: 'https://eduverify.app/certificates/CERT67890.pdf',
+    verified: false,
+    hash: 'def456hashvalue',
+    createdAt: '2025-03-01',
+  },
+  {
+    certificateId: 'CERT11223',
+    fullName: 'Carol Lee',
+    program: 'BBA Business Administration',
+    fieldOfStudy: 'Business Administration',
+    institutionId: 3,
+    institutionName: 'Business School',
+    institutionsEmail: 'admin@businessschool.edu',
+    issuedAt: '2024-12-10',
+    expiresAt: null,
+    status: 'rejected',
+    fileUrl: 'https://eduverify.app/certificates/CERT11223.pdf',
+    verified: false,
+    hash: 'ghi789hashvalue',
+    createdAt: '2024-12-01',
+  },
+  {
+    certificateId: 'CERT44556',
+    fullName: 'David Kim',
+    program: 'BSc Electrical Engineering',
+    fieldOfStudy: 'Electrical Engineering',
+    institutionId: 4,
+    institutionName: 'Polytechnic College',
+    institutionsEmail: 'support@polytechniccollege.edu',
+    issuedAt: '2025-05-05',
+    expiresAt: null,
+    status: 'verified',
+    fileUrl: 'https://eduverify.app/certificates/CERT44556.pdf',
+    verified: true,
+    hash: 'jkl012hashvalue',
+    createdAt: '2025-05-01',
+  },
+  {
+    certificateId: 'CERT77889',
+    fullName: 'Eva Green',
+    program: 'BSc Civil Engineering',
+    fieldOfStudy: 'Civil Engineering',
+    institutionId: 5,
+    institutionName: 'Urban University',
+    institutionsEmail: 'info@urbanuniversity.edu',
+    issuedAt: '2025-06-18',
+    expiresAt: null,
+    status: 'pending',
+    fileUrl: 'https://eduverify.app/certificates/CERT77889.pdf',
+    verified: false,
+    hash: 'mno345hashvalue',
+    createdAt: '2025-06-10',
+  },
+];
+
+  const filteredCertificates = allCertificates.filter( (cert : Certificate)=> {
+    const matchesSearch = cert.fieldOfStudy.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         cert.certificateId.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesFilter = filterStatus === 'all' || cert.status === filterStatus;
     return matchesSearch && matchesFilter;
   });
@@ -117,9 +124,8 @@ const StudentCertificates: React.FC = () => {
   const getStatusStats = () => {
     return {
       total: allCertificates.length,
-      verified: allCertificates.filter(c => c.status === 'verified').length,
-      pending: allCertificates.filter(c => c.status === 'pending').length,
-      rejected: allCertificates.filter(c => c.status === 'rejected').length
+      verified: allCertificates.filter((c : Certificate) => c.status === 'verified').length,
+      pending: allCertificates.filter((c : Certificate) => c.status === 'pending').length,
     };
   };
 
@@ -175,15 +181,6 @@ const StudentCertificates: React.FC = () => {
                 <Calendar className="h-8 w-8 text-yellow-600 dark:text-yellow-400" />
               </div>
             </div>
-            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Rejected</p>
-                  <p className="text-3xl font-bold text-red-600 dark:text-red-400">{stats.rejected}</p>
-                </div>
-                <FileText className="h-8 w-8 text-red-600 dark:text-red-400" />
-              </div>
-            </div>
           </div>
 
           {/* Search and Filter */}
@@ -219,9 +216,9 @@ const StudentCertificates: React.FC = () => {
 
           {/* Certificates Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredCertificates.map((certificate) => (
+            {filteredCertificates.map((certificate: Certificate) => (
               <CertificateCard
-                key={certificate.id}
+                key={certificate.certificateId}
                 certificate={certificate}
                 onView={() => handleView(certificate)}
                 onDownload={() => handleDownload(certificate)}
@@ -257,13 +254,13 @@ const StudentCertificates: React.FC = () => {
         {selectedCertificate && (
           <div className="text-center">
             <QRCodeViewer 
-              value={`https://eduverify.app/verify/${selectedCertificate.verificationCode}`}
+              value={`https://eduverify.app/verify/${selectedCertificate.certificateId}`}
               className="mb-6"
             />
             <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 mb-4">
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Verification Link:</p>
               <p className="text-sm font-mono bg-white dark:bg-gray-600 p-2 rounded border break-all">
-                https://eduverify.app/verify/{selectedCertificate.verificationCode}
+                https://eduverify.app/verify/{selectedCertificate.certificateId}
               </p>
             </div>
             <div className="flex space-x-3">
