@@ -5,7 +5,7 @@ import { Shield } from 'lucide-react';
 import Alert from '../components/UI/Alert';
 
 const LoginPage: React.FC = () => {
-  const [selectedRole, setSelectedRole] = useState<'student' | 'institution' | 'verifier'>('student');
+  const [selectedRole, setSelectedRole] = useState<'student' | 'institution' | 'verifier' | null >(null);
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -45,17 +45,17 @@ const LoginPage: React.FC = () => {
     try {
       const res = await login(email, password);
       
-      if(!res){
+      setSelectedRole(res);
+
+      if(!selectedRole){
         setShowError(true);
         return null;
       }
       
-      setSelectedRole(res);
-      
       const dashboardRoutes = {
-        student: "/student-dashboard",
-        institution: "/institution-dashboard",
-        verifier: "/verifier-dashboard",
+        "student": "/student-dashboard",
+        "institution": "/institution-dashboard",
+        "verifier": "/verifier-dashboard",
       };
 
       navigate(dashboardRoutes[selectedRole]);

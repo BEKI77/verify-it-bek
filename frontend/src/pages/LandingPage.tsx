@@ -28,7 +28,7 @@ const LandingPage: React.FC = () => {
                 to="/login"
                 className="inline-flex items-center px-8 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors"
               >
-                Login with Fayda ID
+                Login
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
               <a 

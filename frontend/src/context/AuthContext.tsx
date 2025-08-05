@@ -34,34 +34,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const { message, data } = response.data;
 
       if (message === "Sign-in successful" && data) {
-        const { registerType, role } = data;
+        const {  role } = data;
 
-        const role_frontend =
-          role === "admin" || role === "institution"
-            ? role
-            : registerType === "email"
-            ? "verifier"
-            : "student";
+        console.log(role);
 
         const userData: User = {
           id: data.id.toString(),
           email: data.email,
-          role: role_frontend,
+          role,
           name: data.email.split("@")[0],
           imageUrl: data.imageUrl
         };
         setUser(userData);
 
         localStorage.setItem("eduverify_user", JSON.stringify(userData));
-        localStorage.setItem("eduverify_user", JSON.stringify(userData));
         localStorage.setItem("auth_token", data.token);
       
-        if (
-          role_frontend === "student" ||
-          role_frontend === "institution" ||
-          role_frontend === "verifier"
-        ) {
-          return role_frontend;
+        if ( role === "student" || role === "institution" || role === "verifier" ) {
+          return role;
         }
         return null;
       } else {
@@ -76,19 +66,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const handleAuthCallback = (data: any) => {
     if (data) {
-      const { registerType, role } = data;
-
-        const role_frontend =
-          role === "admin" || role === "institution"
-            ? role
-            : registerType === "email"
-            ? "verifier"
-            : "student";
-
+      const { role } = data;
+      
         const userData: User = {
           id: data.id.toString(),
           email: data.email,
-          role: role_frontend,
+          role,
           name: data.email.split("@")[0],
           imageUrl: data.imageUrl
         };
@@ -97,12 +80,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         localStorage.setItem("eduverify_user", JSON.stringify(userData));
         localStorage.setItem("auth_token", data.token);
       
-        if (
-          role_frontend === "student" ||
-          role_frontend === "institution" ||
-          role_frontend === "verifier"
-        ) {
-          return role_frontend;
+        if ( role=== "student" || role === "institution" || role === "verifier" ) {
+          return role;
         }
         return null;
   
