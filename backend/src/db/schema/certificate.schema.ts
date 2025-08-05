@@ -1,4 +1,4 @@
-import { pgTable, varchar, boolean, timestamp, text, serial, integer, uuid,pgEnum } from 'drizzle-orm/pg-core';
+import { pgTable, varchar, boolean, timestamp, text, integer, uuid,pgEnum } from 'drizzle-orm/pg-core';
 import { institutions } from './institution.schema';
 
 export const statusEum = pgEnum('revokeStatus', ['valid', 'revoked']);

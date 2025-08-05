@@ -3,6 +3,7 @@ import { DB } from 'src/db/db.module';
 import { DrizzleDB } from 'src/db/types/db';
 import { certificates } from 'src/db/schema/certificate.schema';
 import { eq } from 'drizzle-orm';
+import { verifications } from 'src/db/schema/verification.schema';
 @Injectable()
 export class VerificationService {
   constructor(
@@ -26,14 +27,22 @@ export class VerificationService {
 
     return {
       valid: true,
-      certificate: {
-        fullName: cert.fullName,
-        degree: cert.program,
-        fieldOfStudy: cert.fieldOfStudy,
-        issuedAt: cert.issuedAt,
-        certificateId: cert.certificateId,
-        institution: cert.institutionId,
-      },
+      certificate: cert,
     };
+  }
+
+  async logVerification(logData: {
+    certificateId: string;
+    verifiedByIp: string;
+    status: 'valid' | 'invalid' | 'pending';
+    notes: string | null;
+  }) {
+  
+    await this.db.insert(verifications).values({
+      certificateId: logData.certificateId,
+      verifiedByIp: logData.verifiedByIp,
+      status: logData.status,
+      notes: logData.notes,
+    });
   }
 }
