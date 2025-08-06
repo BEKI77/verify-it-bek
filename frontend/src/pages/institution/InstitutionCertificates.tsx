@@ -21,6 +21,7 @@ interface Certificate {
 
 const InstitutionCertificates: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
+  const [viewButton , setViewButton ] = useState<boolean>(false);
   const [filterStatus, setFilterStatus] = useState<'all' | 'valid' | 'revoked'>('all');
   const [allCertificates, setAllCertificates] = useState<Certificate[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -59,8 +60,15 @@ const InstitutionCertificates: React.FC = () => {
     return matchesSearch && matchesStatus;
   });
 
-  const handleView = (certificate: Certificate) => {
-    window.open(certificate.fileUrl || '#', '_blank');
+  const handleView = async(certificate: Certificate) => {
+    setViewButton(true);
+    const verifyLink = `${import.meta.env.VITE_BACKEND_URL}/verify?certificateId=${certificate.certificateId}`;
+
+      // Make a GET request to the verify link using axios
+    const response = await axios.get(verifyLink);
+    const pdfUrl = response.data.data.pdfUrl;
+    window.open(pdfUrl || '#', '_blank');
+    setViewButton(false)
   };
 
   const getStatusColor = (status: string) => {
@@ -171,6 +179,7 @@ const InstitutionCertificates: React.FC = () => {
                             <button
                               onClick={() => handleView(certificate)}
                               className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300"
+                              disabled={viewButton}
                             >
                               <Eye className="h-4 w-4" />
                             </button>

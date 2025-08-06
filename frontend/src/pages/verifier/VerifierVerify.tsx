@@ -1,10 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Search, CheckCircle, XCircle, AlertCircle, Download, FileText, Camera } from 'lucide-react';
+import { Search, FileText, Camera } from 'lucide-react';
 import { BrowserMultiFormatReader } from '@zxing/library'; // Import ZXing library
 import Alert from '../../components/UI/Alert';
 import axios from 'axios';
 import { VerificationMessage } from '../../components/UI/Message';
 import { useVerification } from '../../context/VerificationContext';
+import VerificationDetailsCard from '../../components/UI/VerificationCard';
 
 
 const VerifierVerify: React.FC = () => {
@@ -84,41 +85,31 @@ const VerifierVerify: React.FC = () => {
 
       // Make a GET request to the verify link using axios
       const response = await axios.get(verifyLink);
+
+      console.log(response);
       if (response.status === 200) {
         setVerificationResult({
-          id: response.data.data.certificateId,
-          studentId: 'tmp',
-          studentName: response.data.data.fullName,
-          certificateType: response.data.data.degree,
-          issueDate: response.data.data.issuedAt,
-          institutionName: response.data.data.institution,
-          verificationCode: searchQuery,
+          certificateId: response.data.data.certificateId,
+          fullName: response.data.data.fullName,
+          program: response.data.data.program,
+          fieldOfStudy: response.data.data.degree,
+          institutionId: response.data.data.institutionId,
+          institutionsEmail: response.data.data.institutionEmail,
+          issuedAt: response.data.data.issuedAt,
+          institutionName: response.data.data.institutionName,
+          verified:response.data.data.verified,
+          hash: response.data.data.hase,
+          createdAt: response.data.data.createdAt,
+          fileUrl: response.data.data.pdfUrl,
+          expiresAt: response.data.data.expiresAt,
           status: "verified",
         });
       } else {
-        setVerificationResult({
-          id: 'not-found',
-          studentId: 'unknown',
-          studentName: 'Not Found',
-          institutionName: 'Certificate not found or invalid',
-          certificateType: 'Unknown',
-          issueDate: '',
-          verificationCode: '',
-          status: 'rejected',
-        });
+        setVerificationResult(null);
       }
     } catch (error) {
       console.error('Error verifying certificate:', error);
-      setVerificationResult({
-        id: 'error',
-        studentId: 'unknown',
-        studentName: 'Error',
-        institutionName: 'An error occurred while verifying the certificate',
-        certificateType: 'Unknown',
-        issueDate: '',
-        verificationCode: '',
-        status: 'pending',
-      });
+      setVerificationResult(null);
     } finally {
       setIsSearching(false);
     }
@@ -225,6 +216,24 @@ const VerifierVerify: React.FC = () => {
                 </form>
                   <VerificationMessage/>
               </div>
+
+              {verificationResult && (
+                <VerificationDetailsCard
+                  certificateId={verificationResult.certificateId}
+                  fullName={verificationResult.fullName}
+                  program={verificationResult.program}
+                  fieldOfStudy={verificationResult.fieldOfStudy}
+                  institutionId={verificationResult.institutionId}
+                  institutionsEmail={verificationResult.institutionsEmail}
+                  issuedAt={verificationResult.issuedAt}
+                  institutionName={verificationResult.institutionName}
+                  verified={verificationResult.verified}
+                  hash={verificationResult.hash}
+                  createdAt={verificationResult.createdAt}
+                  fileUrl={verificationResult.fileUrl|| ''}
+                  expiresAt={verificationResult.expiresAt || ''}
+                />
+              )}
             </div>
           </div>
         </div>

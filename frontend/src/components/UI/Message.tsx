@@ -17,26 +17,6 @@ export const VerificationMessage: React.FC = () => {
       <h3 className="text-lg font-semibold">
         {isVerified ? "Verification Successful" : "Verification Failed"}
       </h3>
-      {isVerified ? (
-        <div className="mt-4 space-y-2">
-          <p>
-            <strong>Student Name:</strong> {verificationResult.studentName}
-          </p>
-          <p>
-            <strong>Certificate Type:</strong> {verificationResult.certificateType}
-          </p>
-          <p>
-            <strong>Issue Date:</strong> {new Date(verificationResult.issueDate).toLocaleDateString()}
-          </p>
-          <p>
-            <strong>Institution Name:</strong> {verificationResult.institutionName}
-          </p>
-        </div>
-      ) : (
-        <p className="mt-2">
-          {verificationResult.pdfUrl || "No additional details available."}
-        </p>
-      )}
     </div>
   );
 };
