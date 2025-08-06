@@ -4,6 +4,7 @@ import { DrizzleDB } from 'src/db/types/db';
 import { certificates } from 'src/db/schema/certificate.schema';
 import { eq } from 'drizzle-orm';
 import { verifications } from 'src/db/schema/verification.schema';
+import { createClient } from '@supabase/supabase-js';
 @Injectable()
 export class VerificationService {
   constructor(
@@ -12,6 +13,8 @@ export class VerificationService {
   ){}
   async verifyCertificateById(certificateId: string) {
     const [cert] = await this.db.select().from(certificates).where(eq(certificates.certificateId, certificateId));
+
+
 
     if (!cert) {
       throw new NotFoundException('Certificate not found');
@@ -25,9 +28,16 @@ export class VerificationService {
       };
     }
 
+    const supabase = await createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_KEY!);
+
+    const pdfUrl = `${await supabase.storage.from('certificates').getPublicUrl(cert.certificateId).data.publicUrl}.pdf`;
+
     return {
       valid: true,
-      certificate: cert,
+      certificate: {
+        ...cert,
+        pdfUrl
+      },
     };
   }
 

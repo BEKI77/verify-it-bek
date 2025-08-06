@@ -62,14 +62,9 @@ export class InstitutionsController {
       .on('error', reject);
     });
 
-    const certificates = await this.institutionsService.issueCertificateBulk(results, user.userId);
-
-    
-
     return {
       success: true,
       message: 'CSV file processed and certificate uploads successfully',
-      data: certificates
     };
   }
 
