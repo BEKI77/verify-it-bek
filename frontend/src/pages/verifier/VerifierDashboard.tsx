@@ -59,19 +59,19 @@ const VerifierDashboard: React.FC = () => {
   const stats = [
     {
       label: 'Total Verifications',
-      value: '156',
+      value: '4',
       icon: FileText,
       color: 'text-blue-600 dark:text-blue-400'
     },
     {
       label: 'Verified Today',
-      value: '12',
+      value: '2',
       icon: CheckCircle,
       color: 'text-green-600 dark:text-green-400'
     },
     {
       label: 'This Month',
-      value: '89',
+      value: '4',
       icon: Calendar,
       color: 'text-purple-600 dark:text-purple-400'
     }

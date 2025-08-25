@@ -44,7 +44,7 @@ const LoginPage: React.FC = () => {
 
     try {
       const res = await login(email, password);
-      
+      console.log(res);
       setSelectedRole(res);
 
       if(!selectedRole){
@@ -56,6 +56,7 @@ const LoginPage: React.FC = () => {
         "student": "/student-dashboard",
         "institution": "/institution-dashboard",
         "verifier": "/verifier-dashboard",
+        "admin": "/admin-dashboard"
       };
 
       navigate(dashboardRoutes[selectedRole]);

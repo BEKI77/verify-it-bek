@@ -39,7 +39,6 @@ const VerificationDetailsCard: React.FC<VerificationDetailsProps> = ({
   issuedAt,
   institutionName,
   verified,
-  hash,
   createdAt,
   fileUrl,
   expiresAt,
@@ -50,10 +49,6 @@ const VerificationDetailsCard: React.FC<VerificationDetailsProps> = ({
       month: 'long',
       day: 'numeric'
     });
-  };
-
-  const truncateHash = (hashString: string) => {
-    return `${hashString.substring(0, 8)}...${hashString.substring(hashString.length - 8)}`;
   };
 
   const detailItems = [
