@@ -5,7 +5,7 @@ services:
       dockerfile: Dockerfile
     container_name: backend_app
     ports:
-      - '4001:4000'
+      - '4000:4000'
     environment:
       DATABASE_URL: ".env value for the databae url"
       TOKEN_ENDPOINT: "https://esignet.ida.fayda.et/v1/esignet/oauth/v2/token"
